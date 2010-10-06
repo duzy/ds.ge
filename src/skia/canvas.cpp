@@ -115,10 +115,10 @@ namespace ds { namespace graphics {
 
     void canvas::IMPL::draw( const box & g, const SkPaint & p )
     {
-      _skCanvas.drawRect(SkRect::MakeLTRB(g.min_corner().x(),
-                                          g.min_corner().y(),
-                                          g.max_corner().x(),
-                                          g.max_corner().y()),
+      _skCanvas.drawRect(SkRect::MakeLTRB(g.left(),
+                                          g.top(),
+                                          g.right(),
+                                          g.bottom()),
                          p);
     }
 
@@ -165,10 +165,10 @@ namespace ds { namespace graphics {
 
     bool canvas::clip( const box & g )
     {
-      return _imp->_skCanvas.clipRect(SkRect::MakeLTRB(g.min_corner().x(),
-                                                       g.min_corner().y(),
-                                                       g.max_corner().x(),
-                                                       g.max_corner().y()),
+      return _imp->_skCanvas.clipRect(SkRect::MakeLTRB(g.left(),
+                                                       g.top(),
+                                                       g.right(),
+                                                       g.bottom()),
                                       SkRegion::kReplace_Op);
     }
 
@@ -244,8 +244,7 @@ namespace ds { namespace graphics {
     {
       _imp->_skCanvas.save( SkCanvas::kClip_SaveFlag );
 
-      clip( g );
-      _imp->draw( g, p, SkPaint::kFill_Style );
+      clip( g ), _imp->draw( g, p, SkPaint::kFill_Style );
 
       _imp->_skCanvas.restore();
     }//canvas::render

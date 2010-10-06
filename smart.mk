@@ -5,6 +5,7 @@ $(call sm-new-module, dsge, shared)
 
 ds.ge.dir := $(sm.this.dir)
 ds.ge.dir.lib := $(ds.ge.dir)/out/$V/lib
+ds.ge.dir.bin := $(ds.ge.dir)/out/$V/bin
 ds.ge.qt_based := false
 ds.ui.dir := $(ds.ge.dir)/../ui
 #ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
@@ -83,6 +84,12 @@ ifeq ($(sm.os.name),win32)
     -Wl,--enable-auto-import
   sm.this.depends += $(sm.out.lib)/libdsge.a
   $(sm.out.lib)/libdsge.a : $(sm.out.lib) $(sm.this.targets)
+
+  sm.this.depends += \
+    $(ds.ge.dir.bin)/$(ds.third.libpng.libname).so \
+    $(ds.ge.dir.bin)/$(ds.third.libxml.libname).so
+  $(ds.ge.dir.bin)/$(ds.third.libpng.libname).so: $(ds.third.dir.bin)/$(ds.third.libpng.libname).so ; @cp -vf $< $@
+  $(ds.ge.dir.bin)/$(ds.third.libxml.libname).so: $(ds.third.dir.bin)/$(ds.third.libxml.libname).so ; @cp -vf $< $@
 else
 ifeq ($(sm.os.name),mac)
   # ...
