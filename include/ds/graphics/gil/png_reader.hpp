@@ -21,18 +21,33 @@ namespace ds { namespace graphics { namespace gil {
        */
       struct png_reader
       {
-        png_reader( std::istream & is )
-          : _png(NULL)
-          , _info(NULL)
-          , _is(is)
+        static bool check( std::istream & is )
         {
           const std::size_t sigSize( boost::gil::detail::PNG_BYTES_TO_CHECK );
+          char buf[ sigSize ];
+          is.read( buf, sigSize );
+          if ( is.gcount() != sigSize )
+            { dsL("png_check_validity: failed to read file"); return false; }
+          if ( png_sig_cmp((png_bytep)buf, (png_size_t)0, sigSize) != 0 )
+            { dsL("png_check_validity: invalid png file"); return false; }
+          return true; //!< good png stream
+        }
+
+        explicit png_reader( std::istream & is, bool doCheck = true )
+          : _png  ( NULL )
+          , _info ( NULL )
+          , _is   ( is )
+        {
+          const std::size_t sigSize( boost::gil::detail::PNG_BYTES_TO_CHECK );
+          /*
           char buf[ sigSize ];
           is.read( buf, sigSize );
           if ( is.gcount() != sigSize )
             { dsL("png_check_validity: failed to read file"); return; }
           if ( png_sig_cmp((png_bytep)buf, (png_size_t)0, sigSize) != 0 )
             { dsL("png_check_validity: invalid png file"); return; }
+          */
+          if ( doCheck && !check(_is) ) { dsL("png_reader::check: bad png stream"); }
           _png = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
           if ( _png == NULL )
             { dsL("failed to call png_create_read_struct()"); return; }
@@ -49,7 +64,7 @@ namespace ds { namespace graphics { namespace gil {
           png_set_read_fn(_png,this,&png_reader::read_data);
           png_set_sig_bytes(_png,sigSize);
           png_read_info(_png,_info);
-          if (boost::gil::little_endian() && png_get_bit_depth(_png,_info)>8)
+          if (boost::gil::little_endian() && 8 < png_get_bit_depth(_png,_info))
             png_set_swap(_png);
         }
 
@@ -118,14 +133,14 @@ namespace ds { namespace graphics { namespace gil {
       private:
         static void read_data(png_structp ptr, png_bytep out, png_size_t sz)
         {
-          png_reader *that((png_reader*)png_get_io_ptr(ptr));
+          png_reader * that((png_reader*)png_get_io_ptr(ptr));
           that->_is.read((char*)out, sz);
         }
 
       protected:
-        png_structp _png;
-        png_infop _info;
-        std::istream & _is;
+        png_structp     _png;
+        png_infop       _info;
+        std::istream &  _is;
       };//struct png_reader
 
     }//namespace gil

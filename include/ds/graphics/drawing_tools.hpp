@@ -9,11 +9,13 @@
 
 #ifndef __DS_GRAPHICS_DRAWING_TOOLS__hpp____by_Duzy_Chan__
 #define __DS_GRAPHICS_DRAWING_TOOLS__hpp____by_Duzy_Chan__ 1
+#       include "color.hpp"
 
 namespace ds { namespace graphics {
 
     struct drawing_tool
     {
+      graphics::color color;
     };
 
     struct brush : drawing_tool

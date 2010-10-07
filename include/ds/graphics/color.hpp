@@ -50,6 +50,15 @@ namespace ds { namespace graphics {
         return rgba( r, g, b, a );
       }
 
+      static inline color rgb( float r, float g, float b )
+      {
+        return rgba( r, g, b, 1.0 );
+      }
+
+      static inline color bgr( float b, float g, float r )
+      {
+        return rgba( r, g, b, 1.0 );
+      }
     };//struct color
     
   }//namespace graphics

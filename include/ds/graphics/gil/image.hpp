@@ -34,6 +34,8 @@ namespace ds { namespace graphics { namespace gil {
       typedef boost::gil::cmyk8_image_t         cmyk8_image_t;
       typedef boost::gil::cmyk16_image_t        cmyk16_image_t;
 
+      // TODO: image rgb565, rgba444
+
       typedef boost::mpl::vector<
         gray8_image_t,        gray16_image_t,
         rgb8_image_t,         rgb16_image_t,

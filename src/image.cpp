@@ -9,6 +9,7 @@
 
 #include <ds/graphics/image.hpp>
 #include <ds/graphics/gil/image.hpp>
+#include <ds/graphics/gil/png_reader.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <ds/debug.hpp>
@@ -50,8 +51,8 @@ namespace ds { namespace graphics {
       template<typename Any>
       inline result_type operator()( const Any & a ) const { return image::NO_PIXEL; }
 
-      inline result_type operator()( const gil::bgra8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
-      inline result_type operator()( const gil::bgra8_image_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::rgba8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::rgba8_image_t & ) const { return image::ARGB_8888_PIXEL; }
     };//struct get_pixel_type_f
 
     image::PixelType image::pixel_type() const
@@ -68,7 +69,7 @@ namespace ds { namespace graphics {
     std::size_t image::pixel_size() const
     {
       switch ( this->pixel_type() ) {
-      case ARGB_8888_PIXEL: return sizeof(gil::bgra8_image_t::value_type);
+      case ARGB_8888_PIXEL: return sizeof(gil::rgba8_image_t::value_type);
       case ARGB_4444_PIXEL: return 0;
       case RGB_565_PIXEL:   return 0;
       }
@@ -88,7 +89,7 @@ namespace ds { namespace graphics {
       case ARGB_4444_PIXEL:
         break;
       case ARGB_8888_PIXEL:
-        _m = new gil::image(gil::bgra8_image_t(w, h));
+        _m = new gil::image(gil::rgba8_image_t(w, h));
         break;
       }
 
@@ -113,7 +114,7 @@ namespace ds { namespace graphics {
         break;
       case ARGB_8888_PIXEL:
         {
-          typedef gil::bgra8_image_t::value_type pixel_t;
+          typedef gil::rgba8_image_t::value_type pixel_t;
           _v = new gil::view( w, h, (pixel_t*)data, w * sizeof(pixel_t) );
         } break;
       }
@@ -143,13 +144,13 @@ namespace ds { namespace graphics {
         ;
     }
 
-    int image::width() const
+    std::size_t image::width() const
     {
       if ( !is_valid() ) return 0;
       return _isView ? _v->width() : _m->width();
     }
 
-    int image::height() const
+    std::size_t image::height() const
     {
       if ( !is_valid() ) return 0;
       return _isView ? _v->height() : _m->height();
@@ -170,7 +171,7 @@ namespace ds { namespace graphics {
 
       if ( 5 < file.size() ) {
 
-        if ( _isView || _m == NULL ) { // convert into image
+        if ( _isView || _m == NULL ) { //!< convert into image
           delete _v;
           _v = NULL;
           _isView = 0;
@@ -180,14 +181,47 @@ namespace ds { namespace graphics {
         using boost::to_lower;
         using boost::iends_with;
         std::string suffix( file.substr(file.size()-5, std::string::npos) );
+
         to_lower( suffix );
-        if ( iends_with(suffix, ".png") ) return _m->load_png( file );
-        if ( iends_with(suffix, ".jpg") ) return _m->load_jpeg( file );
+
+        if ( iends_with(suffix, ".png" ) ) return _m->load_png ( file );
+        if ( iends_with(suffix, ".jpg" ) ) return _m->load_jpeg( file );
         if ( iends_with(suffix, ".jpeg") ) return _m->load_jpeg( file );
         if ( iends_with(suffix, ".tiff") ) return _m->load_tiff( file );
-        if ( iends_with(suffix, ".skin") ) return _m->load_png( file );
+        if ( iends_with(suffix, ".skin") ) return _m->load_png ( file );
       }
 
+      return false;
+    }
+
+    bool image::load( const std::istream & is )
+    {
+      if ( gil::png_reader::check(is) )
+        {
+          if ( _isView || _m == NULL ) { //!< convert into image
+            delete _v;
+            _v = NULL;
+            _isView = 0;
+            _m = new gil::image;
+          }
+
+          gil::png_reader rdr( is, false /* No Check */ );
+          rdr.read_image( _m->any() );
+          return ( 0 < _m->width() && 0 < _m->height() );
+        }
+      // TODO: jpeg, gif, ...
+      return false;
+    }
+
+    bool image::save( const std::string & file )
+    {
+      // TODO: ...
+      return false;
+    }
+
+    bool image::save( const std::ostream & is )
+    {
+      // TODO: ...
       return false;
     }
 

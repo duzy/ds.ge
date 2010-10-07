@@ -11,6 +11,7 @@
 #define __DS_GRAPHICS_CANVAS_hpp____by_Duzy_Chan__ 1
 #   include <boost/noncopyable.hpp>
 #   include "visibility.hpp"
+#   include "point.hpp"
 
 namespace ds { namespace graphics {
 
@@ -67,7 +68,8 @@ namespace ds { namespace graphics {
       //void restore_clip();
 
       void render( const color & );
-      void render( const image & );
+      void render( const image &, coordinate_t x, coordinate_t y );
+      void render( const image & m, const point & p ) { render(m, p.x(), p.y()); }
 
       void render( const point &,       const brush & = default_brush() );
       void render( const box &,         const brush & = default_brush() );

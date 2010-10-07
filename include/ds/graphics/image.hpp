@@ -12,6 +12,7 @@
 #   include <boost/cstdint.hpp>
 #   include "visibility.hpp"
 #   include <string>
+#   include <iosfwd>
 
 namespace ds { namespace graphics {
 
@@ -24,6 +25,8 @@ namespace ds { namespace graphics {
     struct DS_GRAPHICS_PUBLIC image
     {
       image();
+
+      // TODO: explicit image( const std::string & fileName );
 
       enum PixelType {
         NO_PIXEL,
@@ -49,6 +52,16 @@ namespace ds { namespace graphics {
 
       std::size_t pixel_size() const;
 
+      std::size_t width() const;
+      std::size_t height() const;
+
+      std::size_t stride() const { return pixel_size() * width(); }
+
+      #if 0
+      enum resize_e { resize_smooth }
+      void resize();
+      #endif
+
       /**
        *  @brief Load PNG image from a disk file or ds::resource.
        *
@@ -59,14 +72,10 @@ namespace ds { namespace graphics {
        *  @endcode
        */
       bool load( const std::string & file );
+      bool save( const std::string & file );
 
-      int width() const;
-      int height() const;
-
-      #if 0
-      enum resize_e { resize_smooth }
-      void resize(  );
-      #endif
+      bool load( const std::istream & is );
+      bool save( const std::ostream & is );
 
     private:
       unsigned _isView : 1;

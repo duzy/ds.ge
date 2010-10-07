@@ -24,45 +24,38 @@
 #include <ds/debug.hpp>
 
 namespace ds { namespace graphics {
-
-    static void to_SkPaint( SkPaint & paint, const drawing_tool & d )
+    namespace
     {
-      // TODO: ...
-    }
+      inline void to_SkPaint( SkPaint & paint, const drawing_tool & d )
+      {
+        paint.setAntiAlias( true );
+        paint.setARGB( d.color.alpha, d.color.red, d.color.green, d.color.blue );
 
-    static void to_SkPaint( SkPaint & paint, const brush & b )
-    {
-      // TODO: ...
-    }
+        // TODO: more SkPain properties
+      }
 
-    static void to_SkPaint( SkPaint & paint, const pen & p )
-    {
-      // TODO: ...
-    }
+      inline void to_SkPaint( SkPaint & paint, const brush & b )
+      {
+        to_SkPaint( paint, reinterpret_cast<const drawing_tool&>(b) );
 
-    template<typename Ring>
-    static inline void ring_to_SkPath( SkPath & skPath, const Ring & g )
-    {
-      ring::const_iterator it( g.begin() );
-      skPath.moveTo(SkPoint::Make(it->x(), it->y()));
-      for(++it; it != g.end(); ++it)
-        skPath.lineTo(SkPoint::Make(it->x(), it->y()));
-    }
+        paint.setStyle( SkPaint::kFill_Style );
 
-    //--------------------------------------------------------------------
-    
-    struct canvas::IMPL
-    {
-      image * _image;
+        // TODO: more SkPain properties
+      }
 
-      SkBitmap _skBitmap;
-      SkCanvas _skCanvas;
+      inline void to_SkPaint( SkPaint & paint, const pen & p )
+      {
+        to_SkPaint( paint, reinterpret_cast<const drawing_tool&>(p) );
 
-      IMPL( image & img )
-        : _image( &img )
+        paint.setStyle( SkPaint::kStroke_Style );
+
+        // TODO: more SkPain properties
+      }
+
+      inline void to_SkBitmap( SkBitmap & bmp, const image & img )
       {
         SkBitmap::Config config = SkBitmap::kNo_Config;
-        switch ( _image->pixel_type() ) {
+        switch ( img.pixel_type() ) {
         case image::ARGB_8888_PIXEL:
           config = SkBitmap::kARGB_8888_Config;
           break;
@@ -77,21 +70,45 @@ namespace ds { namespace graphics {
           break;
         }
 
-        _skBitmap.setConfig(config, _image->width(), _image->height());
-        _skBitmap.setPixels(_image->pixels());
-        _skCanvas.setBitmapDevice(_skBitmap);
+        bmp.setConfig( config, img.width(), img.height() );
+        bmp.setPixels( (void*)img.pixels() );
+      }
+
+      template<typename Ring>
+      inline void ring_to_SkPath( SkPath & skPath, const Ring & g )
+      {
+        ring::const_iterator it( g.begin() );
+        skPath.moveTo(SkPoint::Make(it->x(), it->y()));
+        for(++it; it != g.end(); ++it)
+          skPath.lineTo(SkPoint::Make(it->x(), it->y()));
+      }
+
+      inline void to_SkRect( SkRect & rect, const box & b )
+      {
+        rect = SkRect::MakeLTRB(b.left(), b.top(), b.right(), b.bottom());
+      }
+    }//namespace
+
+    //--------------------------------------------------------------------
+    
+    struct canvas::IMPL
+    {
+      image * _image;
+
+      SkBitmap _skBitmap;
+      SkCanvas _skCanvas;
+
+      IMPL( image & img )
+        : _image( &img )
+      {
+        to_SkBitmap(_skBitmap, img), _skCanvas.setBitmapDevice(_skBitmap);
       }
 
       template<typename G, typename D>
-      inline void draw( const G & g, const D & d, SkPaint::Style style )
+      inline void draw( const G & g, const D & d )
       {
-        SkPaint paint;                  to_SkPaint( paint, d );
-        paint.setStyle( style );
-
-        // TODO: calculate SkPaint here
-        paint.setAntiAlias( true );
-
-        this->draw( g, paint );
+        SkPaint paint;
+        to_SkPaint( paint, d ), this->draw( g, paint );
       }
 
       void draw( const point & g,       const SkPaint & p );
@@ -115,11 +132,8 @@ namespace ds { namespace graphics {
 
     void canvas::IMPL::draw( const box & g, const SkPaint & p )
     {
-      _skCanvas.drawRect(SkRect::MakeLTRB(g.left(),
-                                          g.top(),
-                                          g.right(),
-                                          g.bottom()),
-                         p);
+      SkRect r;
+      to_SkRect(r, g), _skCanvas.drawRect(r, p);
     }
 
     void canvas::IMPL::draw( const ring & g, const SkPaint & skPaint )
@@ -165,11 +179,9 @@ namespace ds { namespace graphics {
 
     bool canvas::clip( const box & g )
     {
-      return _imp->_skCanvas.clipRect(SkRect::MakeLTRB(g.left(),
-                                                       g.top(),
-                                                       g.right(),
-                                                       g.bottom()),
-                                      SkRegion::kReplace_Op);
+      SkRect r;
+      to_SkRect(r, g);
+      return _imp->_skCanvas.clipRect(r, SkRegion::kReplace_Op);
     }
 
     bool canvas::clip( const region & rgn )
@@ -215,36 +227,46 @@ namespace ds { namespace graphics {
 
     brush & canvas::default_brush()
     {
+      static bool sInit = true;
       static brush sDefaultBrush;
+      if (sInit) {
+        sDefaultBrush.color = color::rgb(0, 0, 0);
+        sInit = false;
+      }
       return sDefaultBrush;
     }
 
     pen & canvas::default_pen()
     {
+      static bool sInit = true;
       static pen sDefaultPen;
+      if (sInit) {
+        sDefaultPen.color = color::rgb(0, 0, 0);
+        sInit = false;
+      }
       return sDefaultPen;
     }
 
     void canvas::render( const point & g, const brush & p )
     {
-      _imp->draw( g, p, SkPaint::kFill_Style );
+      _imp->draw( g, p );
     }
 
     void canvas::render( const box & g, const brush & p )
     {
-      _imp->draw( g, p, SkPaint::kFill_Style );
+      _imp->draw( g, p );
     }
 
     void canvas::render( const ring & g, const brush & p )
     {
-      _imp->draw( g, p, SkPaint::kFill_Style );
+      _imp->draw( g, p );
     }
 
     void canvas::render( const polygon & g, const brush & p )
     {
       _imp->_skCanvas.save( SkCanvas::kClip_SaveFlag );
 
-      clip( g ), _imp->draw( g, p, SkPaint::kFill_Style );
+      clip( g ), _imp->draw( g, p );
 
       _imp->_skCanvas.restore();
     }//canvas::render
@@ -254,34 +276,35 @@ namespace ds { namespace graphics {
       _imp->_skCanvas.drawARGB( c.alpha, c.red, c.green, c.blue );
     }
 
-    void canvas::render( const image & img )
+    void canvas::render( const image & img, coordinate_t x, coordinate_t y )
     {
-      // TODO: ...
+      SkBitmap bmp;
+      to_SkBitmap( bmp, img ), _imp->_skCanvas.drawBitmap( bmp, x, y );
     }
 
     void canvas::stroke( const point & g, const pen & p )
     {
-      _imp->draw( g, p, SkPaint::kStroke_Style );
+      _imp->draw( g, p );
     }
 
     void canvas::stroke( const segment & g , const pen & p )
     {
-      _imp->draw( g, p, SkPaint::kStroke_Style );
+      _imp->draw( g, p );
     }
 
     void canvas::stroke( const ring & g, const pen & p )
     {
-      _imp->draw( g, p, SkPaint::kStroke_Style );
+      _imp->draw( g, p );
     }
 
     void canvas::stroke( const polygon & g, const pen & p )
     {
-      _imp->draw( g, p, SkPaint::kStroke_Style );
+      _imp->draw( g, p );
     }
 
     void canvas::stroke( const box & g, const pen & p )
     {
-      _imp->draw( g, p, SkPaint::kStroke_Style );
+      _imp->draw( g, p );
     }
 
   }//namespace graphics
