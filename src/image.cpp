@@ -13,6 +13,7 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <ds/debug.hpp>
+#include <typeinfo>
 
 namespace ds { namespace graphics {
 
@@ -49,10 +50,16 @@ namespace ds { namespace graphics {
       typedef image::PixelType result_type;
 
       template<typename Any>
-      inline result_type operator()( const Any & a ) const { return image::NO_PIXEL; }
+      inline result_type operator()( const Any & a ) const { dsL("type: "<<sizeof(typename Any::value_type)<<","<<typeid(a).name()); return image::NO_PIXEL; }
 
       inline result_type operator()( const gil::rgba8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
       inline result_type operator()( const gil::rgba8_image_t & ) const { return image::ARGB_8888_PIXEL; }
+
+      inline result_type operator()( const gil::bgra8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::bgra8_image_t & ) const { return image::ARGB_8888_PIXEL; }
+
+      inline result_type operator()( const gil::rgb8_image_t::view_t & ) const { return image::RGB_888_PIXEL; }
+      inline result_type operator()( const gil::rgb8_image_t & ) const { return image::RGB_888_PIXEL; }
     };//struct get_pixel_type_f
 
     image::PixelType image::pixel_type() const
@@ -71,6 +78,7 @@ namespace ds { namespace graphics {
       switch ( this->pixel_type() ) {
       case ARGB_8888_PIXEL: return sizeof(gil::rgba8_image_t::value_type);
       case ARGB_4444_PIXEL: return 0;
+      case RGB_888_PIXEL:   return sizeof(gil::rgb8_image_t::value_type);
       case RGB_565_PIXEL:   return 0;
       }
       return 0;

@@ -22,6 +22,7 @@ sm.this.sources := \
   box.t \
   region.t \
   png_reader.t \
+  image.t \
 
 sm.this.link.options := \
   -Wl,--rpath,$(ds.ge.dir.lib) \

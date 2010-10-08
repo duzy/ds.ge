@@ -32,6 +32,7 @@ namespace ds { namespace graphics {
         NO_PIXEL,
         ARGB_8888_PIXEL,
         ARGB_4444_PIXEL,
+        RGB_888_PIXEL,
         RGB_565_PIXEL,
       };
 
