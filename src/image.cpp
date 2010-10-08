@@ -194,7 +194,7 @@ namespace ds { namespace graphics {
       return false;
     }
 
-    bool image::load( const std::istream & is )
+    bool image::load( std::istream & is )
     {
       if ( gil::png_reader::check(is) )
         {
@@ -219,7 +219,7 @@ namespace ds { namespace graphics {
       return false;
     }
 
-    bool image::save( const std::ostream & is )
+    bool image::save( std::ostream & is )
     {
       // TODO: ...
       return false;

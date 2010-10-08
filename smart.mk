@@ -72,6 +72,7 @@ ifeq ($(ds.ge.qt_based),true)
 endif#qt-based
 
 ifeq ($(sm.os.name),linux)
+  sm.this.libs += pthread
   sm.this.depends += $(sm.out.lib)/libdsge.so
   $(sm.out.lib)/libdsge.so : $(sm.out.lib) $(sm.var.dsge.targets)
 	$(call sm.tool.common.ln,$(sm.top)/$(sm.var.dsge.targets),$@)

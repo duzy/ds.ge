@@ -74,8 +74,8 @@ namespace ds { namespace graphics {
       bool load( const std::string & file );
       bool save( const std::string & file );
 
-      bool load( const std::istream & is );
-      bool save( const std::ostream & is );
+      bool load( std::istream & is );
+      bool save( std::ostream & is );
 
     private:
       unsigned _isView : 1;
