@@ -50,7 +50,15 @@ namespace ds { namespace graphics {
       typedef image::PixelType result_type;
 
       template<typename Any>
-      inline result_type operator()( const Any & a ) const { dsL("type: "<<sizeof(typename Any::value_type)<<","<<typeid(a).name()); return image::NO_PIXEL; }
+      inline result_type operator()( const Any & a ) const { dsL("type: "<<sizeof(typename Any::value_type)<<", "<<typeid(a).name()); return image::NO_PIXEL; }
+
+      // TODO: match image formats
+
+      inline result_type operator()( const gil::argb8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::argb8_image_t & ) const { return image::ARGB_8888_PIXEL; }
+
+      inline result_type operator()( const gil::abgr8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::abgr8_image_t & ) const { return image::ARGB_8888_PIXEL; }
 
       inline result_type operator()( const gil::rgba8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
       inline result_type operator()( const gil::rgba8_image_t & ) const { return image::ARGB_8888_PIXEL; }
@@ -60,6 +68,9 @@ namespace ds { namespace graphics {
 
       inline result_type operator()( const gil::rgb8_image_t::view_t & ) const { return image::RGB_888_PIXEL; }
       inline result_type operator()( const gil::rgb8_image_t & ) const { return image::RGB_888_PIXEL; }
+
+      inline result_type operator()( const gil::bgr8_image_t::view_t & ) const { return image::RGB_888_PIXEL; }
+      inline result_type operator()( const gil::bgr8_image_t & ) const { return image::RGB_888_PIXEL; }
     };//struct get_pixel_type_f
 
     image::PixelType image::pixel_type() const
