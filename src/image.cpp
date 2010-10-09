@@ -50,27 +50,27 @@ namespace ds { namespace graphics {
       typedef image::PixelType result_type;
 
       template<typename Any>
-      inline result_type operator()( const Any & a ) const { dsL("type: "<<sizeof(typename Any::value_type)<<", "<<typeid(a).name()); return image::NO_PIXEL; }
+      inline result_type operator()( const Any & a ) const { return image::NO_PIXEL; }
 
-      // TODO: match image formats
+      // TODO: match image 4444 and 565 formats
 
       inline result_type operator()( const gil::argb8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
-      inline result_type operator()( const gil::argb8_image_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::argb8_image_t &         ) const { return image::ARGB_8888_PIXEL; }
 
-      inline result_type operator()( const gil::abgr8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
-      inline result_type operator()( const gil::abgr8_image_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::abgr8_image_t::view_t & ) const { return image::ABGR_8888_PIXEL; }
+      inline result_type operator()( const gil::abgr8_image_t &         ) const { return image::ABGR_8888_PIXEL; }
 
-      inline result_type operator()( const gil::rgba8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
-      inline result_type operator()( const gil::rgba8_image_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::rgba8_image_t::view_t & ) const { return image::RGBA_8888_PIXEL; }
+      inline result_type operator()( const gil::rgba8_image_t &         ) const { return image::RGBA_8888_PIXEL; }
 
-      inline result_type operator()( const gil::bgra8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
-      inline result_type operator()( const gil::bgra8_image_t & ) const { return image::ARGB_8888_PIXEL; }
+      inline result_type operator()( const gil::bgra8_image_t::view_t & ) const { return image::BGRA_8888_PIXEL; }
+      inline result_type operator()( const gil::bgra8_image_t &         ) const { return image::BGRA_8888_PIXEL; }
 
-      inline result_type operator()( const gil::rgb8_image_t::view_t & ) const { return image::RGB_888_PIXEL; }
-      inline result_type operator()( const gil::rgb8_image_t & ) const { return image::RGB_888_PIXEL; }
+      inline result_type operator()( const gil::rgb8_image_t::view_t &  ) const { return image::RGB_888_PIXEL; }
+      inline result_type operator()( const gil::rgb8_image_t &          ) const { return image::RGB_888_PIXEL; }
 
-      inline result_type operator()( const gil::bgr8_image_t::view_t & ) const { return image::RGB_888_PIXEL; }
-      inline result_type operator()( const gil::bgr8_image_t & ) const { return image::RGB_888_PIXEL; }
+      inline result_type operator()( const gil::bgr8_image_t::view_t &  ) const { return image::BGR_888_PIXEL; }
+      inline result_type operator()( const gil::bgr8_image_t &          ) const { return image::BGR_888_PIXEL; }
     };//struct get_pixel_type_f
 
     image::PixelType image::pixel_type() const
@@ -87,10 +87,18 @@ namespace ds { namespace graphics {
     std::size_t image::pixel_size() const
     {
       switch ( this->pixel_type() ) {
-      case ARGB_8888_PIXEL: return sizeof(gil::rgba8_image_t::value_type);
+      case ARGB_8888_PIXEL: return sizeof(gil::argb8_image_t::value_type);
+      case ABGR_8888_PIXEL: return sizeof(gil::abgr8_image_t::value_type);
+      case RGBA_8888_PIXEL: return sizeof(gil::rgba8_image_t::value_type);
+      case BGRA_8888_PIXEL: return sizeof(gil::bgra8_image_t::value_type);
       case ARGB_4444_PIXEL: return 0;
-      case RGB_888_PIXEL:   return sizeof(gil::rgb8_image_t::value_type);
+      case ABGR_4444_PIXEL: return 0;
+      case RGBA_4444_PIXEL: return 0;
+      case BGRA_4444_PIXEL: return 0;
+      case RGB_888_PIXEL:   return sizeof(gil::rgb8_image_t::value_type );
+      case BGR_888_PIXEL:   return sizeof(gil::bgr8_image_t::value_type );
       case RGB_565_PIXEL:   return 0;
+      case BGR_565_PIXEL:   return 0;
       }
       return 0;
     }

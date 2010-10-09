@@ -31,9 +31,17 @@ namespace ds { namespace graphics {
       enum PixelType {
         NO_PIXEL,
         ARGB_8888_PIXEL,
+        ABGR_8888_PIXEL,
+        RGBA_8888_PIXEL,
+        BGRA_8888_PIXEL,
         ARGB_4444_PIXEL,
+        ABGR_4444_PIXEL,
+        RGBA_4444_PIXEL,
+        BGRA_4444_PIXEL,
         RGB_888_PIXEL,
+        BGR_888_PIXEL,
         RGB_565_PIXEL,
+        BGR_565_PIXEL,
       };
 
       image( int w, int h, PixelType pt );

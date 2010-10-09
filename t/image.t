@@ -13,6 +13,6 @@ BOOST_AUTO_TEST_CASE( image )
   image.load("t/eyes.png");
   BOOST_CHECK( image.width() == 60 );
   BOOST_CHECK( image.height() == 60 );
-  BOOST_CHECK( 0 < image.pixel_size() );
-  std::cout<<image.pixel_size()<<std::endl;
+  BOOST_CHECK( 4 == image.pixel_size() );
+  BOOST_CHECK( image.ABGR_8888_PIXEL == image.pixel_type() );
 }
