@@ -14,6 +14,7 @@
 #       include <boost/gil/image_view_factory.hpp>
 #       include <boost/gil/extension/dynamic_image/any_image.hpp>
 #       include <boost/gil/extension/dynamic_image/apply_operation.hpp>
+#       include <iosfwd>
 
 namespace ds { namespace graphics { namespace gil {
 
@@ -59,9 +60,20 @@ namespace ds { namespace graphics { namespace gil {
         const any_image_t & any() const { return *this; }
         any_image_t & any() { return *this; }
 
-        bool load_jpeg( const std::string & file );
-        bool load_png ( const std::string & file );
-        bool load_tiff( const std::string & file );
+        // bool load_jpeg( const std::string & file );
+        // bool load_png ( const std::string & file );
+        // bool load_gif ( const std::string & file );
+        // bool load_tiff( const std::string & file );
+
+        bool read_jpeg( std::istream & is );
+        bool read_png ( std::istream & is );
+        bool read_gif ( std::istream & is );
+        bool read_tiff( std::istream & is );
+
+        bool write_jpeg( std::ostream & os );
+        bool write_png ( std::ostream & os );
+        bool write_gif ( std::ostream & os );
+        bool write_tiff( std::ostream & os );
       };//struct image
 
       struct view : public any_image_t::view_t
@@ -84,6 +96,16 @@ namespace ds { namespace graphics { namespace gil {
         //any_image_t::const_view_t & any() const { return this->const_view(); }
         const any_image_t::view_t & any() const { return *this; }
         any_image_t::view_t & any() { return *this; }
+
+        bool read_jpeg( std::istream & is );
+        bool read_png ( std::istream & is );
+        bool read_gif ( std::istream & is );
+        bool read_tiff( std::istream & is );
+
+        bool write_jpeg( std::ostream & os );
+        bool write_png ( std::ostream & os );
+        bool write_gif ( std::ostream & os );
+        bool write_tiff( std::ostream & os );
       };//struct view
 
     }//namespace gil

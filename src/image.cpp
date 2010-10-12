@@ -212,11 +212,12 @@ namespace ds { namespace graphics {
 
         to_lower( suffix );
 
-        if ( iends_with(suffix, ".png" ) ) return _m->load_png ( file );
-        if ( iends_with(suffix, ".jpg" ) ) return _m->load_jpeg( file );
-        if ( iends_with(suffix, ".jpeg") ) return _m->load_jpeg( file );
-        if ( iends_with(suffix, ".tiff") ) return _m->load_tiff( file );
-        if ( iends_with(suffix, ".skin") ) return _m->load_png ( file );
+        std::ifstream is( file.c_str(), is.in | is.binary );
+        if ( iends_with(suffix, ".png" ) ) return _m->read_png ( is );
+        if ( iends_with(suffix, ".jpg" ) ) return _m->read_jpeg( is );
+        if ( iends_with(suffix, ".jpeg") ) return _m->read_jpeg( is );
+        if ( iends_with(suffix, ".tiff") ) return _m->read_tiff( is );
+        if ( iends_with(suffix, ".skin") ) return _m->read_png ( is );
       }
 
       return false;
@@ -225,7 +226,7 @@ namespace ds { namespace graphics {
     bool image::load( std::istream & is )
     {
       if ( gil::png_reader::check(is) )
-        { // TODO: move into gil::image::load_png
+        { // TODO: move into gil::image::read_png
           if ( _isView || _m == NULL ) { //!< convert into image
             delete _v;
             _v = NULL;
