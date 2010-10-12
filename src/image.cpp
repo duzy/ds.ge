@@ -14,6 +14,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <ds/debug.hpp>
 #include <typeinfo>
+#include <fstream>
 
 namespace ds { namespace graphics {
 
@@ -224,7 +225,7 @@ namespace ds { namespace graphics {
     bool image::load( std::istream & is )
     {
       if ( gil::png_reader::check(is) )
-        {
+        { // TODO: move into gil::image::load_png
           if ( _isView || _m == NULL ) { //!< convert into image
             delete _v;
             _v = NULL;
@@ -242,14 +243,16 @@ namespace ds { namespace graphics {
 
     bool image::save( const std::string & file )
     {
-      // TODO: ...
-      return false;
+      std::ofstream o( file.c_str(), o.out | o.binary );
+      return this->save( o );
     }
 
-    bool image::save( std::ostream & is )
+    bool image::save( std::ostream & os )
     {
-      // TODO: ...
-      return false;
+      gil::png_writer w( os );
+      if ( _isView ) w.write_view( this->_v->any() );
+      else w.write_image( this->_m->any() );
+      return true;
     }
 
   }//namespace graphics
