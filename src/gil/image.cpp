@@ -88,6 +88,14 @@ namespace ds { namespace graphics { namespace gil {
 
       bool image::write_png ( std::ostream & os )
       {
+        try {
+          gil::png_writer w( os );
+          w.write_image( this->any() );
+          return true;
+        }
+        catch( std::exception const & e ) {
+          dsE("can't load PNG image: "<<e.what());
+        }
         return false;
       }
 

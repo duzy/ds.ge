@@ -9,7 +9,7 @@
 
 #include <ds/graphics/image.hpp>
 #include <ds/graphics/gil/image.hpp>
-#include <ds/graphics/gil/png_io.hpp>
+//#include <ds/graphics/gil/png_io.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <ds/debug.hpp>
@@ -253,19 +253,15 @@ namespace ds { namespace graphics {
 
     bool image::load( std::istream & is )
     {
-      if ( gil::png_reader::check(is) )
-        { // TODO: move into gil::image::read_png
-          if ( _isView || _m == NULL ) { //!< convert into image
-            delete _v;
-            _v = NULL;
-            _isView = 0;
-            _m = new gil::image;
-          }
+      if ( _isView || _m == NULL ) { //!< convert into image
+        delete _v;
+        _v = NULL;
+        _isView = 0;
+        _m = new gil::image;
+      }
+      // if ( gil::png_reader::check(is) ) return _m->read_png( is );
+      return _m->read_png( is );
 
-          gil::png_reader rdr( is, false /* No Check */ );
-          rdr.read_image( _m->any() );
-          return ( 0 < _m->width() && 0 < _m->height() );
-        }
       // TODO: jpeg, gif, ...
       return false;
     }
@@ -278,10 +274,14 @@ namespace ds { namespace graphics {
 
     bool image::save( std::ostream & os )
     {
+      /*
       gil::png_writer w( os );
       if ( _isView ) w.write_view( this->_v->any() );
       else           w.write_image( this->_m->any() );
       return true;
+      */
+      if ( _isView ) return this->_v->write_png( os );
+      else           return this->_m->write_png( os );
     }
 
   }//namespace graphics
