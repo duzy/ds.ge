@@ -106,11 +106,13 @@ namespace ds { namespace graphics { namespace gil {
           png_read_end(_png,NULL);
         }
 
+        /*
         template <typename Image>
         void read_image(Image& im) {
           im.recreate(get_dimensions());
           apply(view(im));
         }
+        */
 
         template <typename Images>
         void read_image(boost::gil::any_image<Images>& im)
@@ -202,17 +204,18 @@ namespace ds { namespace graphics { namespace gil {
           png_write_end(_png,_info);
         }
 
-        //template <typename Images>
-        //void write_image(boost::gil::any_image<Images>& im)
-        template <typename Image>
-        void write_image(Image & im)
+        //template <typename Image>
+        //void write_image(Image & im)
+        template <typename Images>
+        void write_image(boost::gil::any_image<Images>& im)
         {
-          typename Image::view_t v = boost::gil::view(im);
+          //typename Image::view_t v = boost::gil::view(im);
+          typename boost::gil::any_image<Images>::view_t v = boost::gil::view(im);
           this->write_view(v);
         }
 
         //template <typename Images>
-        //void write_view(const typename boost::gil::any_image<Images>::view_t& v)
+        //void write_view(typename boost::gil::any_image<Images>::view_t& v)
         template <typename View>
         void write_view(View & v)
         {

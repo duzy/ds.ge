@@ -20,22 +20,22 @@
 
 namespace ds { namespace graphics { namespace gil {
 
-      typedef boost::gil::gray8_image_t         gray8_image_t;
-      typedef boost::gil::gray16_image_t        gray16_image_t;
-      typedef boost::gil::rgb8_image_t          rgb8_image_t;
-      typedef boost::gil::rgb16_image_t         rgb16_image_t;
-      typedef boost::gil::rgba8_image_t         rgba8_image_t;
-      typedef boost::gil::rgba16_image_t        rgba16_image_t;
-      typedef boost::gil::bgr8_image_t          bgr8_image_t;
-      typedef boost::gil::bgr16_image_t         bgr16_image_t;
-      typedef boost::gil::bgra8_image_t         bgra8_image_t;
-      typedef boost::gil::bgra16_image_t        bgra16_image_t;
-      typedef boost::gil::argb8_image_t         argb8_image_t;
-      typedef boost::gil::argb16_image_t        argb16_image_t;
-      typedef boost::gil::abgr8_image_t         abgr8_image_t;
-      typedef boost::gil::abgr16_image_t        abgr16_image_t;
-      typedef boost::gil::cmyk8_image_t         cmyk8_image_t;
-      typedef boost::gil::cmyk16_image_t        cmyk16_image_t;
+      using boost::gil::gray8_image_t;
+      using boost::gil::gray16_image_t;
+      using boost::gil::rgb8_image_t;
+      using boost::gil::rgb16_image_t;
+      using boost::gil::rgba8_image_t;
+      using boost::gil::rgba16_image_t;
+      using boost::gil::bgr8_image_t;
+      using boost::gil::bgr16_image_t;
+      using boost::gil::bgra8_image_t;
+      using boost::gil::bgra16_image_t;
+      using boost::gil::argb8_image_t;
+      using boost::gil::argb16_image_t;
+      using boost::gil::abgr8_image_t;
+      using boost::gil::abgr16_image_t;
+      using boost::gil::cmyk8_image_t;
+      using boost::gil::cmyk16_image_t;
 
       typedef boost::gil::packed_pixel_type<uint16_t, boost::mpl::vector4_c<unsigned,4,4,4,4>, boost::gil::rgba_layout_t>::type rgba4_pixel_t; // rgba4444
       typedef boost::gil::packed_pixel_type<uint16_t, boost::mpl::vector4_c<unsigned,4,4,4,4>, boost::gil::bgra_layout_t>::type bgra4_pixel_t; // bgra4444
