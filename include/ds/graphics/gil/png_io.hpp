@@ -135,7 +135,8 @@ namespace ds { namespace graphics { namespace gil {
         {
           png_reader * self((png_reader*)png_get_io_ptr(ptr));
           self->_is.read((char*)out, sz);
-          dsI( self->_is.gcount() == sz );
+          /* dsI( self->_is.gcount() == sz ); */
+          dsEif( self->_is.gcount() != sz, "png: hungry-read" );
         }
 
       protected:

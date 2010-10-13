@@ -60,11 +60,6 @@ namespace ds { namespace graphics { namespace gil {
         const any_image_t & any() const { return *this; }
         any_image_t & any() { return *this; }
 
-        // bool load_jpeg( const std::string & file );
-        // bool load_png ( const std::string & file );
-        // bool load_gif ( const std::string & file );
-        // bool load_tiff( const std::string & file );
-
         bool read_jpeg( std::istream & is );
         bool read_png ( std::istream & is );
         bool read_gif ( std::istream & is );
