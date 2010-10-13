@@ -20,7 +20,7 @@
 // #include <boost/gil/extension/io/png_dynamic_io.hpp>
 // //#include <boost/gil/extension/io/jpeg_dynamic_io.hpp>
 // //#include <boost/gil/extension/io/tiff_dynamic_io.hpp>
-#include <ds/graphics/gil/png_reader.hpp>
+#include <ds/graphics/gil/png_io.hpp>
 
 namespace ds { namespace graphics { namespace gil {
 

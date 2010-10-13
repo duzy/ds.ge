@@ -21,7 +21,7 @@ sm.this.sources := \
   boost_test_stuff.cpp \
   box.t \
   region.t \
-  png_reader.t \
+  png_io.t \
   image.t \
 
 sm.this.link.options := \

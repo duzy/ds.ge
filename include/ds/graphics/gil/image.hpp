@@ -9,8 +9,10 @@
 
 #ifndef __DS_GRAPHICS_GIL_IMAGE_HPP____by_Duzy_Chan__
 #define __DS_GRAPHICS_GIL_IMAGE_HPP____by_Duzy_Chan__ 1
-#       include <boost/mpl/vector.hpp>
+//#       include <boost/mpl/vector.hpp>
+#       include <boost/mpl/vector/vector30.hpp>
 #       include <boost/gil/typedefs.hpp>
+#       include <boost/gil/packed_pixel.hpp>
 #       include <boost/gil/image_view_factory.hpp>
 #       include <boost/gil/extension/dynamic_image/any_image.hpp>
 #       include <boost/gil/extension/dynamic_image/apply_operation.hpp>
@@ -35,17 +37,36 @@ namespace ds { namespace graphics { namespace gil {
       typedef boost::gil::cmyk8_image_t         cmyk8_image_t;
       typedef boost::gil::cmyk16_image_t        cmyk16_image_t;
 
-      // TODO: image rgb565, rgba444
+      typedef boost::gil::packed_pixel_type<uint16_t, boost::mpl::vector4_c<unsigned,4,4,4,4>, boost::gil::rgba_layout_t>::type rgba4_pixel_t; // rgba4444
+      typedef boost::gil::packed_pixel_type<uint16_t, boost::mpl::vector4_c<unsigned,4,4,4,4>, boost::gil::bgra_layout_t>::type bgra4_pixel_t; // bgra4444
+      typedef boost::gil::packed_pixel_type<uint16_t, boost::mpl::vector4_c<unsigned,4,4,4,4>, boost::gil::argb_layout_t>::type argb4_pixel_t; //
+      typedef boost::gil::packed_pixel_type<uint16_t, boost::mpl::vector4_c<unsigned,4,4,4,4>, boost::gil::abgr_layout_t>::type abgr4_pixel_t; //
 
-      typedef boost::mpl::vector<
-        gray8_image_t,        gray16_image_t,
-        rgb8_image_t,         rgb16_image_t,
-        rgba8_image_t,        rgba16_image_t,
-        bgr8_image_t,         bgr16_image_t,
-        bgra8_image_t,        bgra16_image_t,
-        argb8_image_t,        argb16_image_t,
-        abgr8_image_t,        abgr16_image_t,
-        cmyk8_image_t,        cmyk16_image_t
+      typedef boost::gil::packed_pixel_type<uint16_t, boost::mpl::vector3_c<unsigned,5,6,5>, boost::gil::rgb_layout_t>::type rgb565_pixel_t;
+      typedef boost::gil::packed_pixel_type<uint16_t, boost::mpl::vector3_c<unsigned,5,6,5>, boost::gil::bgr_layout_t>::type bgr565_pixel_t;
+
+      BOOST_STATIC_ASSERT((sizeof(rgb565_pixel_t)==2));
+      BOOST_STATIC_ASSERT((sizeof(bgr565_pixel_t)==2));
+
+      typedef boost::gil::image<rgba4_pixel_t,false,std::allocator<uint8_t> > rgba4_image_t;
+      typedef boost::gil::image<bgra4_pixel_t,false,std::allocator<uint8_t> > bgra4_image_t;
+      typedef boost::gil::image<argb4_pixel_t,false,std::allocator<uint8_t> > argb4_image_t;
+      typedef boost::gil::image<abgr4_pixel_t,false,std::allocator<uint8_t> > abgr4_image_t;
+      typedef boost::gil::image<rgb565_pixel_t,false,std::allocator<uint8_t> > rgb565_image_t;
+      typedef boost::gil::image<bgr565_pixel_t,false,std::allocator<uint8_t> > bgr565_image_t;
+
+      typedef boost::mpl::vector/*22*/<
+        gray8_image_t,  gray16_image_t,
+        
+        /*rgb565_image_t,*/ rgb8_image_t,  rgb16_image_t,
+        /*bgr565_image_t,*/ bgr8_image_t,  bgr16_image_t,
+        
+        /*rgba4_image_t,*/  rgba8_image_t, rgba16_image_t,
+        /*bgra4_image_t,*/  bgra8_image_t, bgra16_image_t,
+        /*argb4_image_t,*/  argb8_image_t, argb16_image_t,
+        /*abgr4_image_t,*/  abgr8_image_t, abgr16_image_t,
+        
+        cmyk8_image_t,  cmyk16_image_t
         > supported_image_types;
 
       typedef boost::gil::any_image<supported_image_types> any_image_t;

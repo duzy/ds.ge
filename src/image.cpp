@@ -9,7 +9,7 @@
 
 #include <ds/graphics/image.hpp>
 #include <ds/graphics/gil/image.hpp>
-#include <ds/graphics/gil/png_reader.hpp>
+#include <ds/graphics/gil/png_io.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <ds/debug.hpp>
@@ -43,7 +43,7 @@ namespace ds { namespace graphics {
     image::~image()
     {
       if ( _isView ) delete _v;
-      else delete _m;
+      else           delete _m;
     }
 
     struct get_pixel_type_f
@@ -53,7 +53,17 @@ namespace ds { namespace graphics {
       template<typename Any>
       inline result_type operator()( const Any & a ) const { return image::NO_PIXEL; }
 
-      // TODO: match image 4444 and 565 formats
+      inline result_type operator()( const gil::argb4_image_t::view_t & ) const { return image::ARGB_4444_PIXEL; }
+      inline result_type operator()( const gil::argb4_image_t &         ) const { return image::ARGB_4444_PIXEL; }
+
+      inline result_type operator()( const gil::abgr4_image_t::view_t & ) const { return image::ABGR_4444_PIXEL; }
+      inline result_type operator()( const gil::abgr4_image_t &         ) const { return image::ABGR_4444_PIXEL; }
+
+      inline result_type operator()( const gil::bgra4_image_t::view_t & ) const { return image::BGRA_4444_PIXEL; }
+      inline result_type operator()( const gil::bgra4_image_t &         ) const { return image::BGRA_4444_PIXEL; }
+
+      inline result_type operator()( const gil::rgba4_image_t::view_t & ) const { return image::RGBA_4444_PIXEL; }
+      inline result_type operator()( const gil::rgba4_image_t &         ) const { return image::RGBA_4444_PIXEL; }
 
       inline result_type operator()( const gil::argb8_image_t::view_t & ) const { return image::ARGB_8888_PIXEL; }
       inline result_type operator()( const gil::argb8_image_t &         ) const { return image::ARGB_8888_PIXEL; }
@@ -61,17 +71,23 @@ namespace ds { namespace graphics {
       inline result_type operator()( const gil::abgr8_image_t::view_t & ) const { return image::ABGR_8888_PIXEL; }
       inline result_type operator()( const gil::abgr8_image_t &         ) const { return image::ABGR_8888_PIXEL; }
 
+      inline result_type operator()( const gil::bgra8_image_t::view_t & ) const { return image::BGRA_8888_PIXEL; }
+      inline result_type operator()( const gil::bgra8_image_t &         ) const { return image::BGRA_8888_PIXEL; }
+
       inline result_type operator()( const gil::rgba8_image_t::view_t & ) const { return image::RGBA_8888_PIXEL; }
       inline result_type operator()( const gil::rgba8_image_t &         ) const { return image::RGBA_8888_PIXEL; }
 
-      inline result_type operator()( const gil::bgra8_image_t::view_t & ) const { return image::BGRA_8888_PIXEL; }
-      inline result_type operator()( const gil::bgra8_image_t &         ) const { return image::BGRA_8888_PIXEL; }
+      inline result_type operator()( const gil::bgr8_image_t::view_t &  ) const { return image::BGR_888_PIXEL; }
+      inline result_type operator()( const gil::bgr8_image_t &          ) const { return image::BGR_888_PIXEL; }
 
       inline result_type operator()( const gil::rgb8_image_t::view_t &  ) const { return image::RGB_888_PIXEL; }
       inline result_type operator()( const gil::rgb8_image_t &          ) const { return image::RGB_888_PIXEL; }
 
-      inline result_type operator()( const gil::bgr8_image_t::view_t &  ) const { return image::BGR_888_PIXEL; }
-      inline result_type operator()( const gil::bgr8_image_t &          ) const { return image::BGR_888_PIXEL; }
+      inline result_type operator()( const gil::bgr565_image_t::view_t &  ) const { return image::BGR_565_PIXEL; }
+      inline result_type operator()( const gil::bgr565_image_t &          ) const { return image::BGR_565_PIXEL; }
+
+      inline result_type operator()( const gil::rgb565_image_t::view_t &  ) const { return image::RGB_565_PIXEL; }
+      inline result_type operator()( const gil::rgb565_image_t &          ) const { return image::RGB_565_PIXEL; }
     };//struct get_pixel_type_f
 
     image::PixelType image::pixel_type() const
@@ -92,14 +108,14 @@ namespace ds { namespace graphics {
       case ABGR_8888_PIXEL: return sizeof(gil::abgr8_image_t::value_type);
       case RGBA_8888_PIXEL: return sizeof(gil::rgba8_image_t::value_type);
       case BGRA_8888_PIXEL: return sizeof(gil::bgra8_image_t::value_type);
-      case ARGB_4444_PIXEL: return 0;
-      case ABGR_4444_PIXEL: return 0;
-      case RGBA_4444_PIXEL: return 0;
-      case BGRA_4444_PIXEL: return 0;
+      case ARGB_4444_PIXEL: return sizeof(gil::argb4_image_t::value_type);
+      case ABGR_4444_PIXEL: return sizeof(gil::abgr4_image_t::value_type);
+      case RGBA_4444_PIXEL: return sizeof(gil::rgba4_image_t::value_type);
+      case BGRA_4444_PIXEL: return sizeof(gil::bgra4_image_t::value_type);
       case RGB_888_PIXEL:   return sizeof(gil::rgb8_image_t::value_type );
       case BGR_888_PIXEL:   return sizeof(gil::bgr8_image_t::value_type );
-      case RGB_565_PIXEL:   return 0;
-      case BGR_565_PIXEL:   return 0;
+      case RGB_565_PIXEL:   return sizeof(gil::rgb565_image_t::value_type);
+      case BGR_565_PIXEL:   return sizeof(gil::bgr565_image_t::value_type);
       }
       return 0;
     }
@@ -107,21 +123,27 @@ namespace ds { namespace graphics {
     bool image::create( int w, int h, PixelType pt )
     {
       if ( _isView ) delete _v;
-      else delete _m;
+      else           delete _m;
 
       _isView = 0;
       _m = NULL;
 
       switch ( pt ) {
-      case RGB_565_PIXEL:
-      case ARGB_4444_PIXEL:
-        break;
-      case ARGB_8888_PIXEL:
-        _m = new gil::image(gil::rgba8_image_t(w, h));
-        break;
+      case RGB_565_PIXEL:   _m = new gil::image(gil::rgb565_image_t(w, h)); break;
+      case BGR_565_PIXEL:   _m = new gil::image(gil::bgr565_image_t(w, h)); break;
+      case RGB_888_PIXEL:   _m = new gil::image(gil::rgb8_image_t  (w, h)); break;
+      case BGR_888_PIXEL:   _m = new gil::image(gil::bgr8_image_t  (w, h)); break;
+      case ARGB_4444_PIXEL: _m = new gil::image(gil::rgba4_image_t (w, h)); break;
+      case ABGR_4444_PIXEL: _m = new gil::image(gil::bgra4_image_t (w, h)); break;
+      case RGBA_4444_PIXEL: _m = new gil::image(gil::argb4_image_t (w, h)); break;
+      case BGRA_4444_PIXEL: _m = new gil::image(gil::abgr4_image_t (w, h)); break;
+      case ARGB_8888_PIXEL: _m = new gil::image(gil::rgba8_image_t (w, h)); break;
+      case ABGR_8888_PIXEL: _m = new gil::image(gil::bgra8_image_t (w, h)); break;
+      case RGBA_8888_PIXEL: _m = new gil::image(gil::argb8_image_t (w, h)); break;
+      case BGRA_8888_PIXEL: _m = new gil::image(gil::abgr8_image_t (w, h)); break;
       }
 
-      if ( _m ) {
+      if ( _m && _m->width() != w && _m->height() != h ) {
         _m->recreate( w, h );
       }
 
@@ -131,21 +153,27 @@ namespace ds { namespace graphics {
     bool image::create( int w, int h, PixelType pt, uint8_t * data )
     {
       if ( _isView ) delete _v;
-      else delete _m;
+      else           delete _m;
 
       _isView = 1;
       _v = NULL;
 
+#     define NEW_GIL_VIEW(CS) new gil::view( w, h, (gil::CS##_image_t::value_type*)data, w * sizeof(gil::CS##_image_t::value_type*) )
       switch ( pt ) {
-      case RGB_565_PIXEL:
-      case ARGB_4444_PIXEL:
-        break;
-      case ARGB_8888_PIXEL:
-        {
-          typedef gil::rgba8_image_t::value_type pixel_t;
-          _v = new gil::view( w, h, (pixel_t*)data, w * sizeof(pixel_t) );
-        } break;
+      case RGB_565_PIXEL:   _v = NEW_GIL_VIEW(rgb565); break;
+      case BGR_565_PIXEL:   _v = NEW_GIL_VIEW(bgr565); break;
+      case RGB_888_PIXEL:   _v = NEW_GIL_VIEW(rgb8  ); break;
+      case BGR_888_PIXEL:   _v = NEW_GIL_VIEW(bgr8  ); break;
+      case ARGB_4444_PIXEL: _v = NEW_GIL_VIEW(argb4); break;
+      case ABGR_4444_PIXEL: _v = NEW_GIL_VIEW(abgr4); break;
+      case RGBA_4444_PIXEL: _v = NEW_GIL_VIEW(rgba4); break;
+      case BGRA_4444_PIXEL: _v = NEW_GIL_VIEW(bgra4); break;
+      case ARGB_8888_PIXEL: _v = NEW_GIL_VIEW(argb8); break;
+      case ABGR_8888_PIXEL: _v = NEW_GIL_VIEW(abgr8); break;
+      case RGBA_8888_PIXEL: _v = NEW_GIL_VIEW(rgba8); break;
+      case BGRA_8888_PIXEL: _v = NEW_GIL_VIEW(bgra8); break;
       }
+#     undef NEW_GIL_VIEW
 
       return ( _v != NULL );
     }
@@ -252,7 +280,7 @@ namespace ds { namespace graphics {
     {
       gil::png_writer w( os );
       if ( _isView ) w.write_view( this->_v->any() );
-      else w.write_image( this->_m->any() );
+      else           w.write_image( this->_m->any() );
       return true;
     }
 

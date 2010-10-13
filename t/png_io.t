@@ -3,7 +3,7 @@
  */
 
 #include <ds/graphics/gil/image.hpp>
-#include <ds/graphics/gil/png_reader.hpp>
+#include <ds/graphics/gil/png_io.hpp>
 #include <boost/test/unit_test.hpp>
 #include <fstream>
 
