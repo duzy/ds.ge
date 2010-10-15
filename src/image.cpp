@@ -137,10 +137,10 @@ namespace ds { namespace graphics {
       case ABGR_4444_PIXEL: _m = new gil::image(gil::bgra4_image_t (w, h)); break;
       case RGBA_4444_PIXEL: _m = new gil::image(gil::argb4_image_t (w, h)); break;
       case BGRA_4444_PIXEL: _m = new gil::image(gil::abgr4_image_t (w, h)); break;
-      case ARGB_8888_PIXEL: _m = new gil::image(gil::rgba8_image_t (w, h)); break;
-      case ABGR_8888_PIXEL: _m = new gil::image(gil::bgra8_image_t (w, h)); break;
-      case RGBA_8888_PIXEL: _m = new gil::image(gil::argb8_image_t (w, h)); break;
-      case BGRA_8888_PIXEL: _m = new gil::image(gil::abgr8_image_t (w, h)); break;
+      case ARGB_8888_PIXEL: _m = new gil::image(gil::argb8_image_t (w, h)); break;
+      case ABGR_8888_PIXEL: _m = new gil::image(gil::abgr8_image_t (w, h)); break;
+      case RGBA_8888_PIXEL: _m = new gil::image(gil::rgba8_image_t (w, h)); break;
+      case BGRA_8888_PIXEL: _m = new gil::image(gil::bgra8_image_t (w, h)); break;
       }
 
       if ( _m && _m->width() != w && _m->height() != h ) {

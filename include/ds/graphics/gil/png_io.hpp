@@ -9,13 +9,25 @@ extern "C" {
 #      define int_p_NULL NULL /* for png_dynamic_io.hpp, libpng-1.4.x don't have */
 #   endif
 }
+#   include <boost/gil/channel.hpp>
 #	include <boost/gil/extension/io/dynamic_io.hpp>
 #	include <boost/gil/extension/io/png_io.hpp>
 #	include <boost/gil/extension/io/png_dynamic_io.hpp>
-#   include <boost/gil/channel.hpp>
 #	include <istream>
 
 namespace ds { namespace graphics { namespace gil {
+
+      template<typename OpClass>
+      struct fnobj
+      {
+        OpClass * _p;
+        fnobj(OpClass * r) : _p(r) {}
+        template <typename View>
+        void operator()(View& view)
+        {
+          _p->apply(view);
+        }
+      };//struct fnobj
 
       /**
        *  @brief Read PNG image from std::istream
@@ -106,13 +118,25 @@ namespace ds { namespace graphics { namespace gil {
           png_read_end(_png,NULL);
         }
 
-        /*
+        void apply( rgb565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void apply( bgr565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void apply( rgba4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void apply( bgra4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void apply( argb4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void apply( abgr4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+
         template <typename Image>
         void read_image(Image& im) {
           im.recreate(get_dimensions());
           apply(view(im));
         }
-        */
+
+        void read_image( rgb565_image_t & ) { TODO("unsupported PNG image format"); }
+        void read_image( bgr565_image_t & ) { TODO("unsupported PNG image format"); }
+        void read_image( rgba4_image_t & ) { TODO("unsupported PNG image format"); }
+        void read_image( bgra4_image_t & ) { TODO("unsupported PNG image format"); }
+        void read_image( argb4_image_t & ) { TODO("unsupported PNG image format"); }
+        void read_image( abgr4_image_t & ) { TODO("unsupported PNG image format"); }
 
         template <typename Images>
         void read_image(boost::gil::any_image<Images>& im)
@@ -126,8 +150,9 @@ namespace ds { namespace graphics { namespace gil {
             boost::gil::io_error("png_reader_dynamic::read_image(): no matching image type between those of the given any_image and that of the file");
           } else {
             im.recreate(width,height);
-            boost::gil::detail::dynamic_io_fnobj
-              <boost::gil::detail::png_read_is_supported, png_reader> op(this);
+            using boost::gil::detail::dynamic_io_fnobj;
+            dynamic_io_fnobj <boost::gil::detail::png_read_is_supported, png_reader> op(this);
+            //fnobj<png_reader> op(this);
             boost::gil::apply_operation(boost::gil::view(im),op);
           }
         }
@@ -204,6 +229,20 @@ namespace ds { namespace graphics { namespace gil {
           png_write_end(_png,_info);
         }
 
+        void apply( rgb565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void apply( bgr565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void apply( rgba4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void apply( bgra4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void apply( argb4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void apply( abgr4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+
+        void write_view( rgb565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void write_view( bgr565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void write_view( rgba4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void write_view( bgra4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void write_view( argb4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        void write_view( abgr4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+
         //template <typename Image>
         //void write_image(Image & im)
         template <typename Images>
@@ -214,6 +253,13 @@ namespace ds { namespace graphics { namespace gil {
           this->write_view(v);
         }
 
+        void write_image( rgb565_image_t & ) { TODO("unsupported PNG image format"); }
+        void write_image( bgr565_image_t & ) { TODO("unsupported PNG image format"); }
+        void write_image( rgba4_image_t & ) { TODO("unsupported PNG image format"); }
+        void write_image( bgra4_image_t & ) { TODO("unsupported PNG image format"); }
+        void write_image( argb4_image_t & ) { TODO("unsupported PNG image format"); }
+        void write_image( abgr4_image_t & ) { TODO("unsupported PNG image format"); }
+
         //template <typename Images>
         //void write_view(typename boost::gil::any_image<Images>::view_t& v)
         template <typename View>
@@ -223,6 +269,7 @@ namespace ds { namespace graphics { namespace gil {
           using boost::gil::detail::dynamic_io_fnobj;
           using boost::gil::apply_operation;
           dynamic_io_fnobj <png_read_is_supported, png_writer> op(this);
+            //fnobj <png_writer> op(this);
           apply_operation(v,op);
         }
 

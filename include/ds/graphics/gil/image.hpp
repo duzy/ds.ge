@@ -11,8 +11,8 @@
 #define __DS_GRAPHICS_GIL_IMAGE_HPP____by_Duzy_Chan__ 1
 //#       include <boost/mpl/vector.hpp>
 #       include <boost/mpl/vector/vector30.hpp>
-#       include <boost/gil/typedefs.hpp>
 #       include <boost/gil/packed_pixel.hpp>
+#       include <boost/gil/typedefs.hpp>
 #       include <boost/gil/image_view_factory.hpp>
 #       include <boost/gil/extension/dynamic_image/any_image.hpp>
 #       include <boost/gil/extension/dynamic_image/apply_operation.hpp>
@@ -55,19 +55,35 @@ namespace ds { namespace graphics { namespace gil {
       typedef boost::gil::image<rgb565_pixel_t,false,std::allocator<uint8_t> > rgb565_image_t;
       typedef boost::gil::image<bgr565_pixel_t,false,std::allocator<uint8_t> > bgr565_image_t;
 
-      typedef boost::mpl::vector/*22*/<
+#     if 0
+      typedef boost::mpl::vector22<
         gray8_image_t,  gray16_image_t,
         
-        /*rgb565_image_t,*/ rgb8_image_t,  rgb16_image_t,
-        /*bgr565_image_t,*/ bgr8_image_t,  bgr16_image_t,
+        rgb565_image_t, rgb8_image_t,  rgb16_image_t,
+        bgr565_image_t, bgr8_image_t,  bgr16_image_t,
         
-        /*rgba4_image_t,*/  rgba8_image_t, rgba16_image_t,
-        /*bgra4_image_t,*/  bgra8_image_t, bgra16_image_t,
-        /*argb4_image_t,*/  argb8_image_t, argb16_image_t,
-        /*abgr4_image_t,*/  abgr8_image_t, abgr16_image_t,
+        rgba4_image_t,  rgba8_image_t, rgba16_image_t,
+        bgra4_image_t,  bgra8_image_t, bgra16_image_t,
+        argb4_image_t,  argb8_image_t, argb16_image_t,
+        abgr4_image_t,  abgr8_image_t, abgr16_image_t,
         
         cmyk8_image_t,  cmyk16_image_t
         > supported_image_types;
+#     else
+      typedef boost::mpl::vector<
+        gray8_image_t,  gray16_image_t,
+        
+        rgb8_image_t,  rgb16_image_t,
+        bgr8_image_t,  bgr16_image_t,
+        
+        rgba8_image_t, rgba16_image_t,
+        bgra8_image_t, bgra16_image_t,
+        argb8_image_t, argb16_image_t,
+        abgr8_image_t, abgr16_image_t,
+        
+        cmyk8_image_t,  cmyk16_image_t
+        > supported_image_types;
+#     endif
 
       typedef boost::gil::any_image<supported_image_types> any_image_t;
 
@@ -127,5 +143,13 @@ namespace ds { namespace graphics { namespace gil {
     }//namespace gil
   }//namespace graphics
 }//namespace ds
+
+// namespace boost { namespace gil {
+//     template <typename ChannelValue, typename Layout>
+//         struct channel_type<packed_pixel_type<ChannelValue,Layout> > {
+//       typedef ChannelValue type;
+//     }; 
+//   }
+// }
 
 #endif//__DS_GRAPHICS_GIL_IMAGE_HPP____by_Duzy_Chan__
