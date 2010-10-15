@@ -29,3 +29,22 @@ BOOST_AUTO_TEST_CASE( png_reader )
   BOOST_CHECK( img2.width() == 60 );
   BOOST_CHECK( img2.height() == 60 );
 }
+
+BOOST_AUTO_TEST_CASE( png_writer )
+{
+  {
+    std::ofstream os( "test-out.png", os.out | os.binary );
+    ds::graphics::gil::image image(ds::graphics::gil::rgba8_image_t(5,5));
+    ds::graphics::gil::png_writer w( os );
+    w.write_image( image );
+    {
+      std::ifstream i( "test-out.png", i.binary | i.in );
+      BOOST_CHECK( i );
+      ds::graphics::gil::image m;
+      rdr.read_image( m.any() );
+      BOOST_CHECK( m.width() == 5 );
+      BOOST_CHECK( m.height() == 5 );
+    }
+  }
+}
+
