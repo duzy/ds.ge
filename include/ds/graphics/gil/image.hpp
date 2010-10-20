@@ -59,7 +59,7 @@ namespace ds { namespace graphics { namespace gil {
       typedef boost::gil::image<rgb565_pixel_t,false,std::allocator<uint8_t> > rgb565_image_t;
       typedef boost::gil::image<bgr565_pixel_t,false,std::allocator<uint8_t> > bgr565_image_t;
 
-#     if 0
+#     if 1
       typedef boost::mpl::vector22<
         gray8_image_t,  gray16_image_t,
         
@@ -148,12 +148,12 @@ namespace ds { namespace graphics { namespace gil {
   }//namespace graphics
 }//namespace ds
 
-// namespace boost { namespace gil {
-//     template <typename ChannelValue, typename Layout>
-//         struct channel_type<packed_pixel_type<ChannelValue,Layout> > {
-//       typedef ChannelValue type;
-//     }; 
-//   }
-// }
+namespace boost { namespace gil {
+    template <typename ChannelValue, typename TS, typename Layout>
+    struct channel_type<packed_pixel<ChannelValue,TS,Layout> > {
+      typedef ChannelValue type;
+    }; 
+  }
+}
 
 #endif//__DS_GRAPHICS_GIL_IMAGE_HPP____by_Duzy_Chan__

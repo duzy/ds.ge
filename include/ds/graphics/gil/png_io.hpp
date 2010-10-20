@@ -40,14 +40,6 @@ namespace ds { namespace graphics { namespace gil {
           , _is   ( is )
         {
           const std::size_t sigSize( boost::gil::detail::PNG_BYTES_TO_CHECK );
-          /*
-            char buf[ sigSize ];
-            is.read( buf, sigSize );
-            if ( is.gcount() != sigSize )
-            { dsE("png_check_validity: failed to read file"); return; }
-            if ( png_sig_cmp((png_bytep)buf, (png_size_t)0, sigSize) != 0 )
-            { dsE("png_check_validity: invalid png file"); return; }
-          */
           if ( doCheck && !check(_is) ) { dsE("png_reader::check: bad png stream"); }
           _png = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
           if ( _png == NULL ) { dsE("failed to call png_create_read_struct()"); return; }

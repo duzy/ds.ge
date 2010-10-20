@@ -69,8 +69,10 @@ int image_pixel_size( /*const*/ M & o )
   return boost::gil::apply_operation( o, f );
 }
 
-BOOST_AUTO_TEST_CASE( png_reader )
+BOOST_AUTO_TEST_CASE( png_reader_test )
 {
+  typedef ds::graphics::gil::abgr8_image_t image_t;
+
   {
     std::ifstream i( "eyes.png", i.binary|i.in );
     if ( !i ) i.open( "t/eyes.png", i.binary|i.in );
@@ -82,7 +84,7 @@ BOOST_AUTO_TEST_CASE( png_reader )
     BOOST_CHECK( m.width () == 60 );
     BOOST_CHECK( m.height() == 60 );
     BOOST_CHECK( image_pixel_size(m.any()) == 4 );
-    BOOST_CHECK( check_image_type<ds::graphics::gil::abgr8_image_t>( m.any() ) );
+    BOOST_CHECK( check_image_type<image_t>( m.any() ) );
 
     boost::gil::png_write_view( "test-out.png", view(m.any()) );
   }
@@ -92,22 +94,28 @@ BOOST_AUTO_TEST_CASE( png_reader )
     BOOST_CHECK( is );
 
     ds::graphics::gil::image m;
-    ds::graphics::gil::png_reader rdr2( is );
-    rdr2.read_image( m.any() );
+    ds::graphics::gil::png_reader r( is );
+    r.read_image( m.any() );
     BOOST_CHECK( m.width () == 60 );
     BOOST_CHECK( m.height() == 60 );
     BOOST_CHECK( image_pixel_size(m.any()) == 4 );
-    BOOST_CHECK( check_image_type<ds::graphics::gil::abgr8_image_t>( m.any() ) );
+    BOOST_CHECK( check_image_type<image_t>( m.any() ) );
   }
 }
 
-BOOST_AUTO_TEST_CASE( png_writer )
+BOOST_AUTO_TEST_CASE( png_writer_test )
 {
+  typedef ds::graphics::gil::rgba8_image_t image_t;
   {
     std::ofstream os( "test-out.png", os.out | os.binary );
     BOOST_CHECK( os );
 
-    ds::graphics::gil::image image(ds::graphics::gil::rgba8_image_t(5,5));
+    ds::graphics::gil::image image(image_t(5,5));
+    BOOST_CHECK( image.width () == 5 );
+    BOOST_CHECK( image.height() == 5 );
+    BOOST_CHECK( image_pixel_size(image.any()) == 4 );
+    BOOST_CHECK( check_image_type<image_t>(image.any()) );
+
     ds::graphics::gil::png_writer w( os );
     w.write_image( image );
     {
@@ -122,7 +130,7 @@ BOOST_AUTO_TEST_CASE( png_writer )
       BOOST_CHECK( m.width () == 5 );
       BOOST_CHECK( m.height() == 5 );
       BOOST_CHECK( image_pixel_size(m.any()) == 4 );
-      BOOST_CHECK( check_image_type<ds::graphics::gil::rgba8_image_t>( image.any() ) );
+      BOOST_CHECK( check_image_type<image_t>( image.any() ) );
     }
   }
 }
