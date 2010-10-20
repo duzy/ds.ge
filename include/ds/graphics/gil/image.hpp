@@ -47,6 +47,10 @@ namespace ds { namespace graphics { namespace gil {
 
       BOOST_STATIC_ASSERT((sizeof(rgb565_pixel_t)==2));
       BOOST_STATIC_ASSERT((sizeof(bgr565_pixel_t)==2));
+      BOOST_STATIC_ASSERT((sizeof(rgba4_pixel_t )==2));
+      BOOST_STATIC_ASSERT((sizeof(bgra4_pixel_t )==2));
+      BOOST_STATIC_ASSERT((sizeof(argb4_pixel_t )==2));
+      BOOST_STATIC_ASSERT((sizeof(abgr4_pixel_t )==2));
 
       typedef boost::gil::image<rgba4_pixel_t,false,std::allocator<uint8_t> > rgba4_image_t;
       typedef boost::gil::image<bgra4_pixel_t,false,std::allocator<uint8_t> > bgra4_image_t;
@@ -95,7 +99,7 @@ namespace ds { namespace graphics { namespace gil {
         explicit image(const T & o) : any_image_t(o) {}
 
         const any_image_t & any() const { return *this; }
-        any_image_t & any() { return *this; }
+        /**/  any_image_t & any()       { return *this; }
 
         bool read_jpeg( std::istream & is );
         bool read_png ( std::istream & is );
@@ -127,7 +131,7 @@ namespace ds { namespace graphics { namespace gil {
 
         //any_image_t::const_view_t & any() const { return this->const_view(); }
         const any_image_t::view_t & any() const { return *this; }
-        any_image_t::view_t & any() { return *this; }
+        /**/  any_image_t::view_t & any()       { return *this; }
 
         bool read_jpeg( std::istream & is );
         bool read_png ( std::istream & is );

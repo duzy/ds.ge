@@ -17,18 +17,6 @@ extern "C" {
 
 namespace ds { namespace graphics { namespace gil {
 
-      template<typename OpClass>
-      struct fnobj
-      {
-        OpClass * _p;
-        fnobj(OpClass * r) : _p(r) {}
-        template <typename View>
-        void operator()(View& view)
-        {
-          _p->apply(view);
-        }
-      };//struct fnobj
-
       /**
        *  @brief Read PNG image from std::istream
        */
@@ -62,8 +50,7 @@ namespace ds { namespace graphics { namespace gil {
           */
           if ( doCheck && !check(_is) ) { dsE("png_reader::check: bad png stream"); }
           _png = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
-          if ( _png == NULL )
-            { dsE("failed to call png_create_read_struct()"); return; }
+          if ( _png == NULL ) { dsE("failed to call png_create_read_struct()"); return; }
           _info = png_create_info_struct( _png );
           if ( _info == NULL ) {
             png_destroy_read_struct(&_png,png_infopp_NULL,png_infopp_NULL);
@@ -94,19 +81,21 @@ namespace ds { namespace graphics { namespace gil {
         template <typename View>
         void apply(const View& view)
         {
-          png_uint_32 width, height;
-          int bit_depth, color_type, interlace_type;
-          png_get_IHDR(_png,_info, &width, &height,&bit_depth,&color_type,&interlace_type, int_p_NULL, int_p_NULL);
-          boost::gil::io_error_if
-            (((png_uint_32)view.width()!=width || (png_uint_32)view.height()!= height),
-             "png_read_view: input view size does not match PNG file size");
-
           using boost::gil::detail::png_read_support_private;
           using boost::gil::color_space_type;
           using boost::gil::channel_type;
+          using boost::gil::io_error_if;
+          using boost::gil::io_error;
+
+          png_uint_32 width, height;
+          int bit_depth, color_type, interlace_type;
+          png_get_IHDR(_png,_info, &width, &height,&bit_depth,&color_type,&interlace_type, int_p_NULL, int_p_NULL);
+          io_error_if(((png_uint_32)view.width()!=width || (png_uint_32)view.height()!= height),
+                      "png_read_view: input view size does not match PNG file size");
+
           if(png_read_support_private<typename channel_type<View>::type,typename color_space_type<View>::type>::bit_depth!=bit_depth ||
              png_read_support_private<typename channel_type<View>::type,typename color_space_type<View>::type>::color_type!=color_type)
-            boost::gil::io_error("png_read_view: input view type is incompatible with the image type");
+            io_error("png_read_view: input view type is incompatible with the image type");
 
           using boost::gil::pixel;
           using boost::gil::layout;
@@ -118,30 +107,18 @@ namespace ds { namespace graphics { namespace gil {
           png_read_end(_png,NULL);
         }
 
-        void apply( rgb565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void apply( bgr565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void apply( rgba4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void apply( bgra4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void apply( argb4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void apply( abgr4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-
         template <typename Image>
         void read_image(Image& im) {
           im.recreate(get_dimensions());
           apply(view(im));
         }
 
-        void read_image( rgb565_image_t & ) { TODO("unsupported PNG image format"); }
-        void read_image( bgr565_image_t & ) { TODO("unsupported PNG image format"); }
-        void read_image( rgba4_image_t & ) { TODO("unsupported PNG image format"); }
-        void read_image( bgra4_image_t & ) { TODO("unsupported PNG image format"); }
-        void read_image( argb4_image_t & ) { TODO("unsupported PNG image format"); }
-        void read_image( abgr4_image_t & ) { TODO("unsupported PNG image format"); }
-
         template <typename Images>
         void read_image(boost::gil::any_image<Images>& im)
         {
+          using boost::gil::detail::png_read_is_supported;
           using boost::gil::detail::png_type_format_checker;
+          using boost::gil::detail::dynamic_io_fnobj;
           using boost::gil::construct_matched;
           png_uint_32 width, height;
           int bit_depth, color_type, interlace_type;
@@ -150,9 +127,7 @@ namespace ds { namespace graphics { namespace gil {
             boost::gil::io_error("png_reader_dynamic::read_image(): no matching image type between those of the given any_image and that of the file");
           } else {
             im.recreate(width,height);
-            using boost::gil::detail::dynamic_io_fnobj;
-            dynamic_io_fnobj <boost::gil::detail::png_read_is_supported, png_reader> op(this);
-            //fnobj<png_reader> op(this);
+            dynamic_io_fnobj <png_read_is_supported, png_reader> op(this);
             boost::gil::apply_operation(boost::gil::view(im),op);
           }
         }
@@ -229,48 +204,27 @@ namespace ds { namespace graphics { namespace gil {
           png_write_end(_png,_info);
         }
 
-        void apply( rgb565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void apply( bgr565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void apply( rgba4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void apply( bgra4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void apply( argb4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void apply( abgr4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
+        // template <typename Image>
+        // void write_image(Image & im)
+        // {
+        // }
 
-        void write_view( rgb565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void write_view( bgr565_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void write_view( rgba4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void write_view( bgra4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void write_view( argb4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-        void write_view( abgr4_image_t::view_t & ) { TODO("unsupported PNG image format"); }
-
-        //template <typename Image>
-        //void write_image(Image & im)
         template <typename Images>
-        void write_image(boost::gil::any_image<Images>& im)
+        void write_image(const boost::gil::any_image<Images>& im)
         {
-          //typename Image::view_t v = boost::gil::view(im);
-          typename boost::gil::any_image<Images>::view_t v = boost::gil::view(im);
+          typename boost::gil::any_image<Images>::const_view_t v = boost::gil::const_view(im);
           this->write_view(v);
         }
 
-        void write_image( rgb565_image_t & ) { TODO("unsupported PNG image format"); }
-        void write_image( bgr565_image_t & ) { TODO("unsupported PNG image format"); }
-        void write_image( rgba4_image_t & ) { TODO("unsupported PNG image format"); }
-        void write_image( bgra4_image_t & ) { TODO("unsupported PNG image format"); }
-        void write_image( argb4_image_t & ) { TODO("unsupported PNG image format"); }
-        void write_image( abgr4_image_t & ) { TODO("unsupported PNG image format"); }
-
         //template <typename Images>
-        //void write_view(typename boost::gil::any_image<Images>::view_t& v)
+        //void write_view(typename boost::gil::any_image<Images>::const_view_t& v)
         template <typename View>
-        void write_view(View & v)
+        void write_view(const View & v)
         {
           using boost::gil::detail::png_read_is_supported;
           using boost::gil::detail::dynamic_io_fnobj;
-          using boost::gil::apply_operation;
           dynamic_io_fnobj <png_read_is_supported, png_writer> op(this);
-            //fnobj <png_writer> op(this);
-          apply_operation(v,op);
+          boost::gil::apply_operation(v,op);
         }
 
       private:

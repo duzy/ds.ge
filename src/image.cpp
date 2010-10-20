@@ -9,7 +9,6 @@
 
 #include <ds/graphics/image.hpp>
 #include <ds/graphics/gil/image.hpp>
-//#include <ds/graphics/gil/png_io.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <ds/debug.hpp>
