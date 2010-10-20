@@ -50,7 +50,7 @@ namespace ds { namespace graphics {
       typedef image::PixelType result_type;
 
       template<typename Any>
-      inline result_type operator()( const Any & a ) const { return image::NO_PIXEL; }
+      inline result_type operator()( const Any & a )                      const { return image::NO_PIXEL; }
 
       inline result_type operator()( const gil::argb4_image_t::view_t & ) const { return image::ARGB_4444_PIXEL; }
       inline result_type operator()( const gil::argb4_image_t &         ) const { return image::ARGB_4444_PIXEL; }
@@ -132,10 +132,10 @@ namespace ds { namespace graphics {
       case BGR_565_PIXEL:   _m = new gil::image(gil::bgr565_image_t(w, h)); break;
       case RGB_888_PIXEL:   _m = new gil::image(gil::rgb8_image_t  (w, h)); break;
       case BGR_888_PIXEL:   _m = new gil::image(gil::bgr8_image_t  (w, h)); break;
-      case ARGB_4444_PIXEL: _m = new gil::image(gil::rgba4_image_t (w, h)); break;
-      case ABGR_4444_PIXEL: _m = new gil::image(gil::bgra4_image_t (w, h)); break;
-      case RGBA_4444_PIXEL: _m = new gil::image(gil::argb4_image_t (w, h)); break;
-      case BGRA_4444_PIXEL: _m = new gil::image(gil::abgr4_image_t (w, h)); break;
+      case ARGB_4444_PIXEL: _m = new gil::image(gil::argb4_image_t (w, h)); break;
+      case ABGR_4444_PIXEL: _m = new gil::image(gil::abgr4_image_t (w, h)); break;
+      case RGBA_4444_PIXEL: _m = new gil::image(gil::rgba4_image_t (w, h)); break;
+      case BGRA_4444_PIXEL: _m = new gil::image(gil::bgra4_image_t (w, h)); break;
       case ARGB_8888_PIXEL: _m = new gil::image(gil::argb8_image_t (w, h)); break;
       case ABGR_8888_PIXEL: _m = new gil::image(gil::abgr8_image_t (w, h)); break;
       case RGBA_8888_PIXEL: _m = new gil::image(gil::rgba8_image_t (w, h)); break;
