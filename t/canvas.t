@@ -13,8 +13,11 @@
 #include <ds/graphics/drawing_tools.hpp>
 #include <ds/graphics/canvas.hpp>
 #include <boost/geometry/algorithms/make.hpp>
+#include <boost/geometry/algorithms/assign.hpp>
+#include <boost/geometry/geometries/adapted/c_array_cartesian.hpp>
 
 using namespace ds::graphics;
+using boost::geometry::assign;
 using boost::geometry::make;
 
 BOOST_AUTO_TEST_CASE( canvas_drawing )
@@ -66,6 +69,30 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
     c.stroke( make<box>( 105, 105, 155, 155 ), p );
     p.color = color::rgb(0.1, 0.1, 0.8);
     c.stroke( make<box>( 110, 110, 160, 160 ), p );
+  }
+  {
+    polygon g;
+    {
+      const coordinate_t coords[][2] = {
+        {100.0, 100.0}, {150.0, 100.0}, {200.0,  50.0}, {250.0, 100.0},
+        {300.0, 100.0}, {250.0, 150.0}, {300.0, 200.0}, {200.0, 250.0},
+        {150.0, 150.0},
+        {100.0, 100.0} // closing point is opening point
+      };
+      assign(g, coords);
+    }
+    // {
+    //   g.inners().resize(1);
+    //   const coordinate_t coords[][2] = {
+    //     {40, 20}, {70, 14}, {48, 90}, {22, 80},
+    //     {40, 20} // closing point is opening point
+    //   };
+    //   assign(g.inners().back(), coords);
+    // }
+    b.color = color::rgba( 0.15, 0.25, 0.15, 0.5 );
+    p.color = color::rgba( 0.25, 0.50, 0.25, 1.0 );
+    c.render( g, b );
+    c.stroke( g, p );
   }
   m.save( "test-canvas.png" );
 }
