@@ -103,37 +103,61 @@ BOOST_AUTO_TEST_CASE( png_reader_test )
   }
 }
 
-BOOST_AUTO_TEST_CASE( png_writer_test )
+template<typename image_t, std::size_t PixelSize>
+void test_png_writer()
 {
-  typedef ds::graphics::gil::rgba8_image_t image_t;
+  /*
+  int status;
+  std::clog
+    <<"test_png_writer<"
+    <<abi::__cxa_demangle(typeid(image_t).name(), 0, 0, &status)
+    <<">"
+    <<std::endl
+    ;
+  */
+
+  ds::graphics::gil::image image(image_t(5,5));
+  BOOST_CHECK( image.width () == 5 );
+  BOOST_CHECK( image.height() == 5 );
+  BOOST_CHECK( image_pixel_size(image.any()) == PixelSize );
+  BOOST_CHECK( check_image_type<image_t>(image.any()) );
+
   {
-    ds::graphics::gil::image image(image_t(5,5));
-    BOOST_CHECK( image.width () == 5 );
-    BOOST_CHECK( image.height() == 5 );
-    BOOST_CHECK( image_pixel_size(image.any()) == 4 );
-    BOOST_CHECK( check_image_type<image_t>(image.any()) );
+    std::ofstream os( "test-out.png", os.out | os.binary );
+    BOOST_CHECK( os );
 
-    {
-      std::ofstream os( "test-out.png", os.out | os.binary );
-      BOOST_CHECK( os );
+    ds::graphics::gil::png_writer w( os );
+    w.write_image( image );
+  }
+  {
+    std::ifstream i( "test-out.png", i.binary | i.in );
+    BOOST_CHECK( i );
 
-      ds::graphics::gil::png_writer w( os );
-      w.write_image( image );
-    }
-    {
-      std::ifstream i( "test-out.png", i.binary | i.in );
-      BOOST_CHECK( i );
-
-      ds::graphics::gil::image m;
-      ds::graphics::gil::png_reader r( i );
+    ds::graphics::gil::image m;
+    ds::graphics::gil::png_reader r( i );
       
-      r.read_image( m.any() );
+    r.read_image( m.any() );
 
-      BOOST_CHECK( m.width () == 5 );
-      BOOST_CHECK( m.height() == 5 );
-      BOOST_CHECK( image_pixel_size(m.any()) == 4 );
-      BOOST_CHECK( check_image_type<image_t>( image.any() ) );
-    }
+    BOOST_CHECK( m.width () == 5 );
+    BOOST_CHECK( m.height() == 5 );
+    BOOST_CHECK( image_pixel_size(m.any()) == PixelSize );
+    BOOST_CHECK( check_image_type<image_t>( image.any() ) );
   }
 }
 
+BOOST_AUTO_TEST_CASE( png_writer_test )
+{
+  test_png_writer<ds::graphics::gil::rgba8_image_t, 4>();
+  test_png_writer<ds::graphics::gil::bgra8_image_t, 4>();
+  test_png_writer<ds::graphics::gil::argb8_image_t, 4>();
+  test_png_writer<ds::graphics::gil::abgr8_image_t, 4>();
+  test_png_writer<ds::graphics::gil::rgb8_image_t,  3>();
+  test_png_writer<ds::graphics::gil::bgr8_image_t,  3>();
+
+  test_png_writer<ds::graphics::gil::rgba4_image_t, 2>();
+  test_png_writer<ds::graphics::gil::bgra4_image_t, 2>();
+  test_png_writer<ds::graphics::gil::argb4_image_t, 2>();
+  test_png_writer<ds::graphics::gil::abgr4_image_t, 2>();
+  test_png_writer<ds::graphics::gil::rgb565_image_t,2>();
+  test_png_writer<ds::graphics::gil::bgr565_image_t,2>();
+}
