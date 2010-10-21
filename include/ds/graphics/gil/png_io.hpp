@@ -112,9 +112,10 @@ namespace ds { namespace graphics { namespace gil {
           using boost::gil::detail::png_type_format_checker;
           using boost::gil::detail::dynamic_io_fnobj;
           using boost::gil::construct_matched;
-          png_uint_32 width, height;
+          png_uint_32 status, width, height;
           int bit_depth, color_type, interlace_type;
-          png_get_IHDR(_png,_info, &width, &height,&bit_depth,&color_type,&interlace_type, int_p_NULL, int_p_NULL);
+          status = png_get_IHDR(_png,_info, &width, &height,&bit_depth,&color_type,&interlace_type, int_p_NULL, int_p_NULL);
+          if (status == 0) { boost::gil::io_error("png_reader_dynamic::read_image(): can't get PNG header info"); }
           if (!construct_matched(im,png_type_format_checker(bit_depth,color_type))) {
             boost::gil::io_error("png_reader_dynamic::read_image(): no matching image type between those of the given any_image and that of the file");
           } else {

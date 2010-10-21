@@ -107,17 +107,19 @@ BOOST_AUTO_TEST_CASE( png_writer_test )
 {
   typedef ds::graphics::gil::rgba8_image_t image_t;
   {
-    std::ofstream os( "test-out.png", os.out | os.binary );
-    BOOST_CHECK( os );
-
     ds::graphics::gil::image image(image_t(5,5));
     BOOST_CHECK( image.width () == 5 );
     BOOST_CHECK( image.height() == 5 );
     BOOST_CHECK( image_pixel_size(image.any()) == 4 );
     BOOST_CHECK( check_image_type<image_t>(image.any()) );
 
-    ds::graphics::gil::png_writer w( os );
-    w.write_image( image );
+    {
+      std::ofstream os( "test-out.png", os.out | os.binary );
+      BOOST_CHECK( os );
+
+      ds::graphics::gil::png_writer w( os );
+      w.write_image( image );
+    }
     {
       std::ifstream i( "test-out.png", i.binary | i.in );
       BOOST_CHECK( i );
