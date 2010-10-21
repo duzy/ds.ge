@@ -68,6 +68,11 @@ namespace ds { namespace graphics {
         case image::BGRA_4444_PIXEL:
           config = SkBitmap::kARGB_4444_Config;
           break;
+        case image::RGB_888_PIXEL:
+        case image::BGR_888_PIXEL:
+          TODO("handle with RGB_888 and BGR_888");
+          dsE("canvas does not support RGB_888 and BGR_888");
+          break;
         case image::RGB_565_PIXEL:
         case image::BGR_565_PIXEL:
           config = SkBitmap::kRGB_565_Config;

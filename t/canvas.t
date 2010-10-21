@@ -19,8 +19,12 @@ using boost::geometry::make;
 
 BOOST_AUTO_TEST_CASE( canvas_drawing )
 {
+  /**
+   *  skia is in the RGBA color space
+   */
   //image m( 500, 500, image::ARGB_8888_PIXEL );
   image m( 500, 500, image::RGBA_8888_PIXEL );
+
   canvas c( m );
   c.render( color::rgba(0.2, 0.2, 0.6, 0.5) );
 
