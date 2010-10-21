@@ -8,11 +8,11 @@
  **/
 
 #include <ds/graphics/canvas.hpp>
-//#include <ds/graphics/gil/image.hpp>
 #include <ds/graphics/image.hpp>
 #include <ds/graphics/box.hpp>
 #include <ds/graphics/region.hpp>
 #include <ds/graphics/segment.hpp>
+#include <ds/graphics/line.hpp>
 #include <ds/graphics/ring.hpp>
 #include <ds/graphics/polygon.hpp>
 #include <ds/graphics/color.hpp>
@@ -28,7 +28,7 @@ namespace ds { namespace graphics {
     {
       inline void to_SkPaint( SkPaint & paint, const drawing_tool & d )
       {
-        paint.setAntiAlias( true );
+        paint.setAntiAlias( d.anti_alias ? true : false );
         paint.setARGB( d.color.alpha, d.color.red, d.color.green, d.color.blue );
 
         // TODO: more SkPain properties
@@ -57,12 +57,19 @@ namespace ds { namespace graphics {
         SkBitmap::Config config = SkBitmap::kNo_Config;
         switch ( img.pixel_type() ) {
         case image::ARGB_8888_PIXEL:
+        case image::ABGR_8888_PIXEL:
+        case image::RGBA_8888_PIXEL:
+        case image::BGRA_8888_PIXEL:
           config = SkBitmap::kARGB_8888_Config;
           break;
         case image::ARGB_4444_PIXEL:
+        case image::ABGR_4444_PIXEL:
+        case image::RGBA_4444_PIXEL:
+        case image::BGRA_4444_PIXEL:
           config = SkBitmap::kARGB_4444_Config;
           break;
         case image::RGB_565_PIXEL:
+        case image::BGR_565_PIXEL:
           config = SkBitmap::kRGB_565_Config;
           break;
         default:
@@ -113,6 +120,7 @@ namespace ds { namespace graphics {
 
       void draw( const point & g,       const SkPaint & p );
       void draw( const segment & g,     const SkPaint & p );
+      void draw( const line & g,        const SkPaint & p );
       void draw( const box & g,         const SkPaint & p );
       void draw( const ring & g,        const SkPaint & p );
       void draw( const polygon & g,     const SkPaint & p );
@@ -124,6 +132,13 @@ namespace ds { namespace graphics {
     }
 
     void canvas::IMPL::draw( const segment & g, const SkPaint & p )
+    {
+      _skCanvas.drawLine(g.first .x(), g.first .y(),
+                         g.second.x(), g.second.y(),
+                         p);
+    }
+
+    void canvas::IMPL::draw( const line & g, const SkPaint & p )
     {
       _skCanvas.drawLine(g.first .x(), g.first .y(),
                          g.second.x(), g.second.y(),
@@ -231,6 +246,7 @@ namespace ds { namespace graphics {
       static brush sDefaultBrush;
       if (sInit) {
         sDefaultBrush.color = color::rgb(0, 0, 0);
+        sDefaultBrush.anti_alias = true;
         sInit = false;
       }
       return sDefaultBrush;
@@ -242,6 +258,7 @@ namespace ds { namespace graphics {
       static pen sDefaultPen;
       if (sInit) {
         sDefaultPen.color = color::rgb(0, 0, 0);
+        sDefaultPen.anti_alias = true;
         sInit = false;
       }
       return sDefaultPen;
@@ -288,6 +305,11 @@ namespace ds { namespace graphics {
     }
 
     void canvas::stroke( const segment & g , const pen & p )
+    {
+      _imp->draw( g, p );
+    }
+
+    void canvas::stroke( const line & g , const pen & p )
     {
       _imp->draw( g, p );
     }

@@ -15,7 +15,7 @@ namespace ds { namespace graphics {
 
     struct segment : boost::geometry::segment<point>
     {
-      segment(point & a, point & b)
+      explicit segment(point & a, point & b)
         : boost::geometry::segment<point>(a, b)
       {}
     };//struct segment

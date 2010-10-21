@@ -18,8 +18,14 @@ namespace ds { namespace graphics {
     {
       point first, second;
 
+      inline line()
+        : first (0, 0)
+        , second(0, 0)
+      {}
+      
+
       inline line(point& p1, point& p2)
-        : first(p1)
+        : first (p1)
         , second(p2)
       {}
     };//struct line

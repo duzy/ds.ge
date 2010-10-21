@@ -16,6 +16,7 @@ namespace ds { namespace graphics {
     struct drawing_tool
     {
       graphics::color color;
+      bool anti_alias : 1; // pass in 'const bool &' ?
     };
 
     struct brush : drawing_tool

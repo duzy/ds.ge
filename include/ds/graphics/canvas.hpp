@@ -20,6 +20,7 @@ namespace ds { namespace graphics {
 
     struct point;
     struct segment;
+    struct line;
     struct linestring;
     struct box;
     struct ring;
@@ -79,6 +80,7 @@ namespace ds { namespace graphics {
 
       void stroke( const point &,       const pen & = default_pen() );
       void stroke( const segment &,     const pen & = default_pen() );
+      void stroke( const line &,        const pen & = default_pen() );
       void stroke( const box &,         const pen & = default_pen() );
       void stroke( const ring &,        const pen & = default_pen() );
       void stroke( const polygon &,     const pen & = default_pen() );
