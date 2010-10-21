@@ -43,6 +43,15 @@ BOOST_AUTO_TEST_CASE( box_assign )
   BOOST_CHECK( b.y()      == 25 );
   BOOST_CHECK( b.width()  == 95 );
   BOOST_CHECK( b.height() == 95 );
+
+  b.set_empty();
+  BOOST_CHECK( b.empty() );
+
+  b.resize( 10, 10 );
+  BOOST_CHECK( b.x()      == 0 );
+  BOOST_CHECK( b.y()      == 0 );
+  BOOST_CHECK( b.width()  == 10 );
+  BOOST_CHECK( b.height() == 10 );
 }
 
 BOOST_AUTO_TEST_CASE( box_intersect )

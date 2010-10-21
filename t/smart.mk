@@ -20,6 +20,7 @@ sm.this.includes := \
 sm.this.sources := \
   boost_test_stuff.cpp \
   box.t \
+  canvas.t \
   region.t \
   png_io.t \
   image.t \
