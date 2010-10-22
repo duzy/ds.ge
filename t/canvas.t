@@ -22,11 +22,8 @@ using boost::geometry::make;
 
 BOOST_AUTO_TEST_CASE( canvas_drawing )
 {
-  /**
-   *  skia is in the RGBA color space
-   */
   //image m( 500, 500, image::ARGB_8888_PIXEL );
-  image m( 500, 500, image::RGBA_8888_PIXEL );
+  image m( 500, 500, image::RGBA_8888_PIXEL ); // skia's color space
 
   canvas c( m );
   c.render( color::rgba(0.2, 0.2, 0.6, 0.5) );
@@ -34,7 +31,7 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
   pen   p = canvas::default_pen();
   brush b = canvas::default_brush();
   {
-    b.color = color::rgba( 0.5, 0.1, 0.1, 1 );
+    b.color = color::rgba( 0.5, 0.1, 0.1, 0.8 );
     c.render( make<box>( 10, 10, 60, 60 ), b );
   }
   {
@@ -76,8 +73,7 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
       const coordinate_t coords[][2] = {
         {100.0, 100.0}, {150.0, 100.0}, {200.0,  50.0}, {250.0, 100.0},
         {300.0, 100.0}, {250.0, 150.0}, {300.0, 200.0}, {200.0, 250.0},
-        {150.0, 150.0},
-        {100.0, 100.0} // closing point is opening point
+        {150.0, 150.0}, {100.0, 100.0} // closing point is opening point
       };
       assign(g, coords);
     }

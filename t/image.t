@@ -110,6 +110,14 @@ BOOST_AUTO_TEST_CASE( image_pixel_format_test )
     BOOST_CHECK( 2 == image.pixel_size() );
     BOOST_CHECK( image.BGR_565_PIXEL == image.pixel_type() );
   }
+  {
+    ds::graphics::image image;
+    image.create( 5, 5, ds::graphics::image::BGR_565_PIXEL );
+    BOOST_CHECK( image.width () == 5 );
+    BOOST_CHECK( image.height() == 5 );
+    BOOST_CHECK( 2 == image.pixel_size() );
+    BOOST_CHECK( image.BGR_565_PIXEL == image.pixel_type() );
+  }
 }
 
 BOOST_AUTO_TEST_CASE( image_load_test )

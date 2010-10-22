@@ -78,7 +78,7 @@ namespace ds { namespace graphics {
           config = SkBitmap::kRGB_565_Config;
           break;
         default:
-          dsIm( false, "unsupported pixel format" );
+          dsIm( false, "unsupported pixel format: "<<img.pixel_type() );
           break;
         }
 
@@ -102,7 +102,7 @@ namespace ds { namespace graphics {
     }//namespace
 
     //--------------------------------------------------------------------
-    
+
     struct canvas::IMPL
     {
       image * _image;

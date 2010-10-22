@@ -29,6 +29,7 @@ namespace ds { namespace graphics {
     {
       bool ok = create(w, h, pt);
       dsI( ok );
+      dsI( pixel_type() == pt );
     }
 
     image::image( int w, int h, PixelType pt, uint8_t * data )
@@ -37,6 +38,7 @@ namespace ds { namespace graphics {
     {
       bool ok = create(w, h, pt, data);
       dsI( ok );
+      dsI( pixel_type() == pt );
     }
 
     image::~image()
