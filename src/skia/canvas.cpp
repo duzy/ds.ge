@@ -78,8 +78,10 @@ namespace ds { namespace graphics {
           config = SkBitmap::kRGB_565_Config;
           break;
         default:
-          dsIm( false, "unsupported pixel format: "<<img.pixel_type() );
-          break;
+          //dsIm( false, "unsupported pixel format: "<<img.pixel_type()<<", "<<img.width()<<"x"<<img.height() );
+          //break;
+          dsE( "unsupported pixel format: "<<img.pixel_type()<<", "<<img.width()<<"x"<<img.height() );
+          return;
         }
 
         bmp.setConfig( config, img.width(), img.height() );
