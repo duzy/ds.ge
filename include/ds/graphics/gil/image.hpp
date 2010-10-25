@@ -151,8 +151,8 @@ namespace ds { namespace graphics { namespace gil {
 namespace boost { namespace gil {
     template <typename ChannelValue, typename TS, typename Layout>
     struct channel_type<packed_pixel<ChannelValue,TS,Layout> > {
-      typedef ChannelValue type;
-    }; 
+      typedef ChannelValue type; // FIXME: the channel value type
+    };
   }
 }
 

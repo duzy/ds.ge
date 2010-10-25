@@ -73,11 +73,23 @@ namespace ds { namespace graphics { namespace gil {
         template <typename View>
         void apply(const View& view)
         {
+          this->read_view(view);
+        }
+
+        template <typename View>
+        void read_view(const View& view)
+        {
           using boost::gil::detail::png_read_support_private;
           using boost::gil::color_space_type;
           using boost::gil::channel_type;
           using boost::gil::io_error_if;
           using boost::gil::io_error;
+          using boost::gil::pixel;
+          using boost::gil::layout;
+          typedef typename channel_type<View>::type channel_t;
+          typedef typename color_space_type<View>::type color_space_t;
+          typedef layout<color_space_t> layout_t;
+          typedef pixel<channel_t, layout_t > pixel_t;
 
           png_uint_32 width, height;
           int bit_depth, color_type, interlace_type;
@@ -85,13 +97,11 @@ namespace ds { namespace graphics { namespace gil {
           io_error_if(((png_uint_32)view.width()!=width || (png_uint_32)view.height()!= height),
                       "png_read_view: input view size does not match PNG file size");
 
-          if(png_read_support_private<typename channel_type<View>::type,typename color_space_type<View>::type>::bit_depth!=bit_depth ||
-             png_read_support_private<typename channel_type<View>::type,typename color_space_type<View>::type>::color_type!=color_type)
+          if(png_read_support_private<channel_t,color_space_t>::bit_depth!=bit_depth ||
+             png_read_support_private<channel_t,color_space_t>::color_type!=color_type)
             io_error("png_read_view: input view type is incompatible with the image type");
 
-          using boost::gil::pixel;
-          using boost::gil::layout;
-          std::vector<pixel<typename channel_type<View>::type, layout<typename color_space_type<View>::type> > > row(width);
+          std::vector<pixel_t> row(width);
           for(png_uint_32 y=0;y<height;++y) {
             png_read_row(_png,(png_bytep)&row.front(),NULL);
             std::copy(row.begin(),row.end(),view.row_begin(y));
@@ -99,16 +109,30 @@ namespace ds { namespace graphics { namespace gil {
           png_read_end(_png,NULL);
         }
 
+#       if 0
+        template <typename Images>
+        void read_any_view(const typename boost::gil::any_image<Images>::view_t & view)
+#       else
+        template <typename View>
+        void read_any_view(const View& view)
+#       endif
+        {
+          using boost::gil::detail::png_read_is_supported;
+          using boost::gil::detail::dynamic_io_fnobj;
+          dynamic_io_fnobj <png_read_is_supported, png_reader> op(this);
+          boost::gil::apply_operation(view,op);
+        }
+
         template <typename Image>
-        void read_image(Image& im) {
+        void read_image(Image& im)
+        {
           im.recreate(get_dimensions());
-          apply(view(im));
+          this->read_view(view(im));
         }
 
         template <typename Images>
-        void read_image(boost::gil::any_image<Images>& im)
+        void read_image(boost::gil::any_image<Images>& m)
         {
-          using boost::gil::detail::png_read_is_supported;
           using boost::gil::detail::png_type_format_checker;
           using boost::gil::detail::dynamic_io_fnobj;
           using boost::gil::construct_matched;
@@ -116,12 +140,11 @@ namespace ds { namespace graphics { namespace gil {
           int bit_depth, color_type, interlace_type;
           status = png_get_IHDR(_png,_info, &width, &height,&bit_depth,&color_type,&interlace_type, int_p_NULL, int_p_NULL);
           if (status == 0) { boost::gil::io_error("png_reader_dynamic::read_image(): can't get PNG header info"); }
-          if (!construct_matched(im,png_type_format_checker(bit_depth,color_type))) {
+          if (!construct_matched(m,png_type_format_checker(bit_depth,color_type))) {
             boost::gil::io_error("png_reader_dynamic::read_image(): no matching image type between those of the given any_image and that of the file");
           } else {
-            im.recreate(width,height);
-            dynamic_io_fnobj <png_read_is_supported, png_reader> op(this);
-            boost::gil::apply_operation(boost::gil::view(im),op);
+            m.recreate(width,height);
+            this->read_any_view( boost::gil::view(m) );
           }
         }
 
@@ -170,6 +193,12 @@ namespace ds { namespace graphics { namespace gil {
         template <typename View>
         void apply(const View& view)
         {
+          this->write_view(view);
+        }
+
+        template <typename View>
+        void write_view(const View & view)
+        {
           using boost::gil::detail::png_write_support_private;
           using boost::gil::color_space_type;
           using boost::gil::channel_type;
@@ -197,27 +226,31 @@ namespace ds { namespace graphics { namespace gil {
           png_write_end(_png,_info);
         }
 
+#       if 0
+        template <typename Images>
+        void write_any_view(const typename boost::gil::any_image<Images>::const_view_t& v)
+#       else
+        template <typename View>
+        void write_any_view(const View & v)
+#       endif
+        {
+          using boost::gil::detail::png_read_is_supported;
+          using boost::gil::detail::dynamic_io_fnobj;
+          dynamic_io_fnobj <png_read_is_supported, png_writer> op(this);
+          boost::gil::apply_operation(v,op);
+        }
+
         // template <typename Image>
-        // void write_image(Image & im)
+        // void write_image(/*const*/ Image & im)
         // {
+        //   this->write_view(boost::gil::view(im));
         // }
 
         template <typename Images>
         void write_image(const boost::gil::any_image<Images>& im)
         {
           typename boost::gil::any_image<Images>::const_view_t v = boost::gil::const_view(im);
-          this->write_view(v);
-        }
-
-        //template <typename Images>
-        //void write_view(typename boost::gil::any_image<Images>::const_view_t& v)
-        template <typename View>
-        void write_view(const View & v)
-        {
-          using boost::gil::detail::png_read_is_supported;
-          using boost::gil::detail::dynamic_io_fnobj;
-          dynamic_io_fnobj <png_read_is_supported, png_writer> op(this);
-          boost::gil::apply_operation(v,op);
+          this->write_any_view(v);
         }
 
       private:

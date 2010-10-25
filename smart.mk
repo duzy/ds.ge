@@ -100,3 +100,7 @@ endif#linux
 
 $(call sm-build-this)
 $(call sm-load-subdirs)
+
+###########################################
+
+test: out/debug/bin/all-units.test ; @echo "Running test set $<..."&& $<

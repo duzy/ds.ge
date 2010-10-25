@@ -9,56 +9,16 @@
 
 #include <ds/debug.hpp>
 #include <ds/graphics/gil/image.hpp>
-// #include <boost/gil/image.hpp>
-// extern "C" {
-// #   include <png.h>
-// }
-// #   if PNG_LIBPNG_VER_MAJOR==1 && PNG_LIBPNG_VER_MINOR==4 && PNG_LIBPNG_VER_RELEASE>=3
-// #      define png_infopp_NULL NULL /* for png_dynamic_io.hpp, libpng-1.4.x don't have */
-// #      define int_p_NULL NULL /* for png_dynamic_io.hpp, libpng-1.4.x don't have */
-// #   endif
-// #include <boost/gil/extension/io/png_dynamic_io.hpp>
-// //#include <boost/gil/extension/io/jpeg_dynamic_io.hpp>
-// //#include <boost/gil/extension/io/tiff_dynamic_io.hpp>
 #include <ds/graphics/gil/png_io.hpp>
 
 namespace ds { namespace graphics { namespace gil {
-
-      /*
-      bool image::load_png( const std::string & file )
-      {
-        try {
-          png_read_image( file, this->any() );
-          return true;
-        }
-        catch( std::exception const & e ) {
-          dsE("can't load PNG image: "<<file<<"("<<e.what()<<")");
-        }
-        catch( ... ) {
-          dsE("can't load PNG image: "<<file);
-        }
-        return false;
-      }
-
-      bool image::load_jpeg( const std::string & file )
-      {
-        TODO("load JPEG iamge");
-        return false;
-      }
-
-      bool image::load_tiff( const std::string & file )
-      {
-        TODO("load TIFF image");
-        return false;
-      }
-      */
 
       bool image::read_jpeg( std::istream & is )
       {
         return false;
       }
 
-      bool image::read_png ( std::istream & is )
+      bool image::read_png( std::istream & is )
       {
         try {
           gil::png_reader r( is );
@@ -71,7 +31,7 @@ namespace ds { namespace graphics { namespace gil {
         return false;
       }
 
-      bool image::read_gif ( std::istream & is )
+      bool image::read_gif( std::istream & is )
       {
         return false;
       }
@@ -86,7 +46,7 @@ namespace ds { namespace graphics { namespace gil {
         return false;
       }
 
-      bool image::write_png ( std::ostream & os )
+      bool image::write_png( std::ostream & os )
       {
         try {
           gil::png_writer w( os );
@@ -99,7 +59,7 @@ namespace ds { namespace graphics { namespace gil {
         return false;
       }
 
-      bool image::write_gif ( std::ostream & os )
+      bool image::write_gif( std::ostream & os )
       {
         return false;
       }
@@ -109,18 +69,25 @@ namespace ds { namespace graphics { namespace gil {
         return false;
       }
 
-
       bool view::read_jpeg( std::istream & is )
       {
         return false;
       }
 
-      bool view::read_png ( std::istream & is )
+      bool view::read_png( std::istream & is )
       {
+        try {
+          gil::png_reader r( is );
+          r.read_view( this->any() );
+          return true;
+        }
+        catch( std::exception const & e ) {
+          dsE("can't load PNG image: "<<e.what());
+        }
         return false;
       }
 
-      bool view::read_gif ( std::istream & is )
+      bool view::read_gif( std::istream & is )
       {
         return false;
       }
@@ -135,7 +102,7 @@ namespace ds { namespace graphics { namespace gil {
         return false;
       }
 
-      bool view::write_png ( std::ostream & os )
+      bool view::write_png( std::ostream & os )
       {
         try {
           gil::png_writer w( os );
@@ -148,7 +115,7 @@ namespace ds { namespace graphics { namespace gil {
         return false;
       }
 
-      bool view::write_gif ( std::ostream & os )
+      bool view::write_gif( std::ostream & os )
       {
         return false;
       }
