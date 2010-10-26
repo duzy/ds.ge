@@ -153,6 +153,13 @@ namespace boost { namespace gil {
     struct channel_type<packed_pixel<ChannelValue,TS,Layout> > {
       typedef ChannelValue type; // FIXME: the channel value type
     };
+
+    template <typename ChannelValue, typename TS, typename Layout>
+    inline ChannelValue channel_multiply(packed_pixel<ChannelValue,TS,Layout>, packed_pixel<ChannelValue,TS,Layout>)
+    { 
+      //return channel_multiplier<typename channel_traits<Channel>::value_type>()(a,b);
+    TODO: ...
+    }
   }
 }
 

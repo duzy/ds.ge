@@ -22,8 +22,9 @@ using boost::geometry::make;
 
 BOOST_AUTO_TEST_CASE( canvas_drawing )
 {
-  //image m( 500, 500, image::ARGB_8888_PIXEL );
-  image m( 500, 500, image::RGBA_8888_PIXEL ); // skia's color space
+  //const image::PixelType pixel_type = image::ARGB_8888_PIXEL;
+  const image::PixelType pixel_type = image::RGBA_8888_PIXEL; // skia's color space 
+  image m( 500, 500, pixel_type );
 
   canvas c( m );
   c.render( color::rgba(0.2, 0.2, 0.6, 0.5) );
@@ -89,6 +90,13 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
     p.color = color::rgba( 0.25, 0.50, 0.25, 1.0 );
     c.render( g, b );
     c.stroke( g, p );
+  }
+  {
+    image mm;
+    BOOST_CHECK( mm.load("t/eyes.png") );
+    BOOST_CHECK( mm.ABGR_8888_PIXEL == mm.pixel_type() );
+    BOOST_CHECK( mm.convert_pixels( pixel_type ) );
+    c.render( mm, 200, 30 );
   }
   m.save( "test-canvas.png" );
 }

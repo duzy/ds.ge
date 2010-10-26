@@ -61,6 +61,10 @@ namespace ds { namespace graphics {
 
       std::size_t pixel_size() const;
 
+      void swap( image & other );
+
+      bool convert_pixels( PixelType );
+
       std::size_t width() const;
       std::size_t height() const;
 

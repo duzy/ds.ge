@@ -11,6 +11,7 @@
 #include <ds/graphics/gil/image.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/gil/extension/dynamic_image/algorithm.hpp>
 #include <ds/debug.hpp>
 #include <typeinfo>
 #include <fstream>
@@ -199,6 +200,42 @@ namespace ds { namespace graphics {
         ? boost::gil::apply_operation( _v->any(), f )
         : boost::gil::apply_operation( boost::gil::view(_m->any()), f )
         ;
+    }
+
+    void image::swap( image & o )
+    {
+      unsigned isView = o._isView;
+      gil::image * m  = o._m;
+      o._isView = this->_isView;
+      o._m = this->_m;
+      this->_isView = isView;
+      this->_m = m;
+      //gil::view  * v  = o._v;
+      //o._v = this->_v;
+      //this->_v = v;
+    }
+
+    bool image::convert_pixels( PixelType pt )
+    {
+      if (pixel_type() == pt) return false;
+
+      image t;
+      this->swap( t );
+
+      dsI( t._m != 0 || t._v != 0 );
+      dsI( this->_m == 0 && this->_v == 0 );
+
+      if (pt == NO_PIXEL) return true;
+
+      bool ok = this->create( t.width(), t.height(), pt );
+      dsI( ok );
+
+      gil::any_image_t::view_t v1 = t._isView ? t._v->any()
+        : boost::gil::view( t._m->any() );
+      gil::any_image_t::view_t v2 = this->_isView ? this->_v->any()
+        : boost::gil::view( this->_m->any() );
+      boost::gil::copy_and_convert_pixels( v1, v2 );
+      return true;
     }
 
     std::size_t image::width() const
