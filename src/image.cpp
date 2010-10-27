@@ -13,10 +13,114 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/gil/extension/dynamic_image/algorithm.hpp>
 #include <ds/debug.hpp>
-#include <typeinfo>
 #include <fstream>
+#ifdef PRINT_DEMANGLE
+#  include <typeinfo>
+#  include <cxxabi.h>
+#endif//PRINT_DEMANGLE
 
 namespace ds { namespace graphics {
+
+    namespace
+    {
+      struct pixel_converter
+      {
+        typedef void result_type;
+
+        template<
+          template<typename> class Iterator1,
+          template<typename> class Iterator2,
+          template<typename> class Locator1,
+          template<typename> class Locator2,
+          typename VT1, typename Layout1,
+          typename VT2, typename Layout2
+          >
+        result_type operator()
+        ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::pixel<VT1,Layout1>*> > > & v1,
+          const boost::gil::image_view<Locator2<Iterator2<boost::gil::pixel<VT2,Layout2>*> > > & v2
+          ) const
+        {
+#       ifdef PRINT_DEMANGLE
+          int status;
+          std::clog
+            <<"convert: (pixel, pixel)"<<std::endl
+            <<"  "<<abi::__cxa_demangle(typeid(v1).name(), 0, 0, &status)<<std::endl
+            <<"  "<<abi::__cxa_demangle(typeid(v2).name(), 0, 0, &status)<<std::endl
+            ;
+#       endif//PRINT_DEMANGLE
+          boost::gil::copy_and_convert_pixels( v1, v2 );
+        }
+
+        template<
+          template<typename> class Iterator1,
+          template<typename> class Iterator2,
+          template<typename> class Locator1,
+          template<typename> class Locator2,
+          typename VT1, typename PF1, typename Layout1,
+          typename VT2, typename PF2, typename Layout2
+          >
+        result_type operator()
+        ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::packed_pixel<VT1, PF1, Layout1>*> > > & v1,
+          const boost::gil::image_view<Locator2<Iterator2<boost::gil::packed_pixel<VT2, PF2, Layout2>*> > > & v2
+          ) const
+        {
+#       ifdef PRINT_DEMANGLE
+          int status;
+          std::clog
+            <<"convert: (packed, packed)"<<std::endl
+            <<"  "<<abi::__cxa_demangle(typeid(v1).name(), 0, 0, &status)<<std::endl
+            <<"  "<<abi::__cxa_demangle(typeid(v2).name(), 0, 0, &status)<<std::endl
+            ;
+#       endif//PRINT_DEMANGLE
+        }
+
+        template<
+          template<typename> class Iterator1,
+          template<typename> class Iterator2,
+          template<typename> class Locator1,
+          template<typename> class Locator2,
+          typename VT1, typename PF, typename Layout1,
+          typename VT2,              typename Layout2
+          >
+        result_type operator()
+        ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::packed_pixel<VT1, PF, Layout1>*> > > & v1,
+          const boost::gil::image_view<Locator2<Iterator2<boost::gil::       pixel<VT2,     Layout2>*> > > & v2
+          ) const
+        {
+#       ifdef PRINT_DEMANGLE
+          int status;
+          std::clog
+            <<"convert: (packed, pixel)"<<std::endl
+            <<"  "<<abi::__cxa_demangle(typeid(v1).name(), 0, 0, &status)<<std::endl
+            <<"  "<<abi::__cxa_demangle(typeid(v2).name(), 0, 0, &status)<<std::endl
+            ;
+#       endif//PRINT_DEMANGLE
+        }
+
+        template<
+          template<typename> class Iterator1,
+          template<typename> class Iterator2,
+          template<typename> class Locator1,
+          template<typename> class Locator2,
+          typename VT1,              typename Layout1,
+          typename VT2, typename PF, typename Layout2
+          >
+        result_type operator()
+        ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::       pixel<VT1,     Layout1>*> > > & v1,
+          const boost::gil::image_view<Locator2<Iterator2<boost::gil::packed_pixel<VT2, PF, Layout2>*> > > & v2
+          ) const
+        {
+#       ifdef PRINT_DEMANGLE
+          int status;
+          std::clog
+            <<"convert: (pixel, packed)"<<std::endl
+            <<"  "<<abi::__cxa_demangle(typeid(v1).name(), 0, 0, &status)<<std::endl
+            <<"  "<<abi::__cxa_demangle(typeid(v2).name(), 0, 0, &status)<<std::endl
+            ;
+#       endif//PRINT_DEMANGLE
+        }
+      };//struct pixel_converter
+    }//namespace
 
     image::image()
       : _isView( 0 )
@@ -234,7 +338,14 @@ namespace ds { namespace graphics {
         : boost::gil::view( t._m->any() );
       gil::any_image_t::view_t v2 = this->_isView ? this->_v->any()
         : boost::gil::view( this->_m->any() );
+
+#     if 0
       boost::gil::copy_and_convert_pixels( v1, v2 );
+#     else
+      pixel_converter pc;
+      boost::gil::apply_operation( v1, v2, pc );
+      //dsI( pc.done );
+#     endif
       return true;
     }
 
@@ -312,12 +423,6 @@ namespace ds { namespace graphics {
 
     bool image::save( std::ostream & os )
     {
-      /*
-      gil::png_writer w( os );
-      if ( _isView ) w.write_view( this->_v->any() );
-      else           w.write_image( this->_m->any() );
-      return true;
-      */
       if ( _isView ) return this->_v->write_png( os );
       else           return this->_m->write_png( os );
     }

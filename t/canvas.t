@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
     BOOST_CHECK( mm.load("t/eyes.png") );
     BOOST_CHECK( mm.ABGR_8888_PIXEL == mm.pixel_type() );
     BOOST_CHECK( mm.convert_pixels( pixel_type ) );
-    c.render( mm, 200, 30 );
+    c.render( mm, 300, 30 );
   }
   m.save( "test-canvas.png" );
 }

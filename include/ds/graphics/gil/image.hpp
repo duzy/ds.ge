@@ -154,13 +154,26 @@ namespace boost { namespace gil {
       typedef ChannelValue type; // FIXME: the channel value type
     };
 
-    template <typename ChannelValue, typename TS, typename Layout>
-    inline ChannelValue channel_multiply(packed_pixel<ChannelValue,TS,Layout>, packed_pixel<ChannelValue,TS,Layout>)
-    { 
-      //return channel_multiplier<typename channel_traits<Channel>::value_type>()(a,b);
-    TODO: ...
-    }
-  }
-}
+    // template <typename ChannelValue, typename TS, typename Layout>
+    // struct default_color_converter_impl<rgba_t,packed_pixel<ChannelValue,TS,Layout> >
+    // {
+    //   template <typename P1, typename P2>
+    //   void operator()(const P1& src, P2& dst) const
+    //   {
+    //     // TODO: ...
+    //   }
+    // };
+
+    // template <typename ColorBase, int K>
+    // inline typename kth_semantic_element_const_reference_type<ColorBase,K>::type
+    // channel_multiply(typename kth_semantic_element_const_reference_type<ColorBase,K>::type a,
+    //                  typename kth_semantic_element_const_reference_type<ColorBase,K>::type b)
+    // {
+    //   //return channel_multiplier<typename channel_traits<Channel>::value_type>()(a,b);
+    //   //TODO: ...
+    // }
+
+  }//namespace gil
+}//namespace boost
 
 #endif//__DS_GRAPHICS_GIL_IMAGE_HPP____by_Duzy_Chan__
