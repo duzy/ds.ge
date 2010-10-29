@@ -25,7 +25,7 @@ namespace ds { namespace graphics {
     {
       struct pixel_converter
       {
-        typedef void result_type;
+        typedef bool result_type;
 
         template<
           template<typename> class Iterator1,
@@ -38,7 +38,7 @@ namespace ds { namespace graphics {
         result_type operator()
         ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::pixel<VT1,Layout1>*> > > & v1,
           const boost::gil::image_view<Locator2<Iterator2<boost::gil::pixel<VT2,Layout2>*> > > & v2
-          ) const
+          ) /*const*/
         {
 #       ifdef PRINT_DEMANGLE
           int status;
@@ -49,6 +49,7 @@ namespace ds { namespace graphics {
             ;
 #       endif//PRINT_DEMANGLE
           boost::gil::copy_and_convert_pixels( v1, v2 );
+          return true;
         }
 
         template<
@@ -62,7 +63,7 @@ namespace ds { namespace graphics {
         result_type operator()
         ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::packed_pixel<VT1, PF1, Layout1>*> > > & v1,
           const boost::gil::image_view<Locator2<Iterator2<boost::gil::packed_pixel<VT2, PF2, Layout2>*> > > & v2
-          ) const
+          ) /*const*/
         {
 #       ifdef PRINT_DEMANGLE
           int status;
@@ -72,6 +73,7 @@ namespace ds { namespace graphics {
             <<"  "<<abi::__cxa_demangle(typeid(v2).name(), 0, 0, &status)<<std::endl
             ;
 #       endif//PRINT_DEMANGLE
+          return false;
         }
 
         template<
@@ -85,7 +87,7 @@ namespace ds { namespace graphics {
         result_type operator()
         ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::packed_pixel<VT1, PF, Layout1>*> > > & v1,
           const boost::gil::image_view<Locator2<Iterator2<boost::gil::       pixel<VT2,     Layout2>*> > > & v2
-          ) const
+          ) /*const*/
         {
 #       ifdef PRINT_DEMANGLE
           int status;
@@ -95,6 +97,7 @@ namespace ds { namespace graphics {
             <<"  "<<abi::__cxa_demangle(typeid(v2).name(), 0, 0, &status)<<std::endl
             ;
 #       endif//PRINT_DEMANGLE
+          return false;
         }
 
         template<
@@ -108,7 +111,7 @@ namespace ds { namespace graphics {
         result_type operator()
         ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::       pixel<VT1,     Layout1>*> > > & v1,
           const boost::gil::image_view<Locator2<Iterator2<boost::gil::packed_pixel<VT2, PF, Layout2>*> > > & v2
-          ) const
+          ) /*const*/
         {
 #       ifdef PRINT_DEMANGLE
           int status;
@@ -118,6 +121,7 @@ namespace ds { namespace graphics {
             <<"  "<<abi::__cxa_demangle(typeid(v2).name(), 0, 0, &status)<<std::endl
             ;
 #       endif//PRINT_DEMANGLE
+          return false;
         }
       };//struct pixel_converter
     }//namespace
@@ -341,12 +345,10 @@ namespace ds { namespace graphics {
 
 #     if 0
       boost::gil::copy_and_convert_pixels( v1, v2 );
-#     else
-      pixel_converter pc;
-      boost::gil::apply_operation( v1, v2, pc );
-      //dsI( pc.done );
-#     endif
       return true;
+#     else
+      return boost::gil::apply_operation( v1, v2, pixel_converter() );
+#     endif
     }
 
     std::size_t image::width() const
