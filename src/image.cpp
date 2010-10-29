@@ -14,10 +14,6 @@
 #include <boost/gil/extension/dynamic_image/algorithm.hpp>
 #include <ds/debug.hpp>
 #include <fstream>
-#ifdef PRINT_DEMANGLE
-#  include <typeinfo>
-#  include <cxxabi.h>
-#endif//PRINT_DEMANGLE
 
 namespace ds { namespace graphics {
 
@@ -321,34 +317,6 @@ namespace ds { namespace graphics {
       //gil::view  * v  = o._v;
       //o._v = this->_v;
       //this->_v = v;
-    }
-
-    bool image::convert_pixels( PixelType pt )
-    {
-      if (pixel_type() == pt) return false;
-
-      image t;
-      this->swap( t );
-
-      dsI( t._m != 0 || t._v != 0 );
-      dsI( this->_m == 0 && this->_v == 0 );
-
-      if (pt == NO_PIXEL) return true;
-
-      bool ok = this->create( t.width(), t.height(), pt );
-      dsI( ok );
-
-      gil::any_image_t::view_t v1 = t._isView ? t._v->any()
-        : boost::gil::view( t._m->any() );
-      gil::any_image_t::view_t v2 = this->_isView ? this->_v->any()
-        : boost::gil::view( this->_m->any() );
-
-#     if 0
-      boost::gil::copy_and_convert_pixels( v1, v2 );
-      return true;
-#     else
-      return boost::gil::apply_operation( v1, v2, pixel_converter() );
-#     endif
     }
 
     std::size_t image::width() const
