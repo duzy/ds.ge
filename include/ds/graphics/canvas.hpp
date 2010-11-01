@@ -89,6 +89,12 @@ namespace ds { namespace graphics {
       static brush & default_brush();
       static pen &   default_pen();
 
+      /**
+       *  @brief Returns a integer value representing the system pixel type.
+       *  @see ds::graphics::image::PixelType
+       */
+      static int sys_pixel_type();
+
     private:
       IMPL * _imp;
     };//class canvas

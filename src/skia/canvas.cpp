@@ -199,6 +199,11 @@ namespace ds { namespace graphics {
       delete _imp;
     }
 
+    int canvas::sys_pixel_type()
+    {
+      return int( image::ABGR_8888_PIXEL );
+    }
+
     bool canvas::clip( const box & g )
     {
       SkRect r;
