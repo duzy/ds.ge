@@ -22,6 +22,8 @@ using boost::geometry::make;
 
 BOOST_AUTO_TEST_CASE( canvas_drawing )
 {
+  bool ok = false;
+
   //const image::PixelType pixel_type = image::ARGB_8888_PIXEL;
   const image::PixelType pixel_type = image::RGBA_8888_PIXEL; // skia's color space 
   image m( 500, 500, pixel_type );
@@ -93,17 +95,28 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
   }
   {
     image mm;
-    BOOST_CHECK( mm.load("t/eyes.png") );
-    BOOST_CHECK( mm.ABGR_8888_PIXEL == mm.pixel_type() );
-    BOOST_CHECK( mm.convert_pixels( pixel_type ) );
-    c.render( mm, 400, 30 );
+    BOOST_CHECK( ok = mm.load("t/eyes.png") );
+    if (ok) {
+      BOOST_CHECK( mm.ABGR_8888_PIXEL == mm.pixel_type() );
+      BOOST_CHECK( mm.convert_pixels( pixel_type ) );
+      c.render( mm, 400, 30 );
+    }
   }
   {
-    ds::ustring str((ds::uchar*)L"foobar");
+    image mm;
+    BOOST_CHECK( ok = mm.load("t/incognito.png") );
+    if (ok) {
+      BOOST_CHECK( mm.ABGR_8888_PIXEL == mm.pixel_type() );
+      BOOST_CHECK( mm.convert_pixels( pixel_type ) );
+      c.render( mm, 400, 130 );
+    }
+  }
+  {
+    ds::ustring str((ds::uchar*)"foobar");
     b.color = color::rgba( 0.10, 0.10, 0.10, 0.8 );
     p.color = color::rgba( 0.25, 0.20, 0.25, 1.0 );
-    c.render( str, 200, 10, b );
-    c.stroke( str, 200, 10, p );
+    c.render( str, 20, 300, b );
+    c.stroke( str, 20, 330, p );
   }
   m.save( "test-canvas.png" );
 }
