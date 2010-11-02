@@ -98,7 +98,8 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
     BOOST_CHECK( ok = mm.load("t/eyes.png") );
     if (ok) {
       BOOST_CHECK( mm.ABGR_8888_PIXEL == mm.pixel_type() );
-      BOOST_CHECK( mm.convert_pixels( pixel_type ) );
+      //BOOST_CHECK( mm.convert_pixels( pixel_type ) );
+      BOOST_CHECK( mm.convert<image::ABGR_8888_PIXEL>() );
       c.render( mm, 400, 30 );
     }
   }
@@ -107,16 +108,31 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
     BOOST_CHECK( ok = mm.load("t/incognito.png") );
     if (ok) {
       BOOST_CHECK( mm.ABGR_8888_PIXEL == mm.pixel_type() );
-      BOOST_CHECK( mm.convert_pixels( pixel_type ) );
+      //BOOST_CHECK( mm.convert_pixels( pixel_type ) );
+      BOOST_CHECK( mm.convert<image::ABGR_8888_PIXEL>() );
       c.render( mm, 400, 130 );
     }
   }
   {
-    ds::ustring str((ds::uchar*)"foobar");
+    std::string str("foobar");
     b.color = color::rgba( 0.10, 0.10, 0.10, 0.8 );
     p.color = color::rgba( 0.25, 0.20, 0.25, 1.0 );
     c.render( str, 20, 300, b );
     c.stroke( str, 20, 330, p );
+  }
+  {
+    std::wstring str(L"foobar");
+    b.color = color::rgba( 0.10, 0.10, 0.10, 0.8 );
+    p.color = color::rgba( 0.25, 0.20, 0.25, 1.0 );
+    c.render( str, 20, 360, b );
+    c.stroke( str, 20, 390, p );
+  }
+  {
+    ds::ustring str((ds::uchar*)L"foobar");
+    b.color = color::rgba( 0.10, 0.10, 0.10, 0.8 );
+    p.color = color::rgba( 0.25, 0.20, 0.25, 1.0 );
+    c.render( str, 20, 420, b );
+    c.stroke( str, 20, 450, p );
   }
   m.save( "test-canvas.png" );
 }

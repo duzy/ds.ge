@@ -63,7 +63,8 @@ namespace ds { namespace graphics {
 
       void swap( image & other );
 
-      bool convert_pixels( PixelType );
+      // TODO: use it instead of convert_pixels
+      template<PixelType PT> bool convert() { convert_pixels(PT); }
 
       std::size_t width() const;
       std::size_t height() const;
@@ -89,6 +90,9 @@ namespace ds { namespace graphics {
 
       bool load( std::istream & is );
       bool save( std::ostream & is );
+
+    private:
+      bool convert_pixels( PixelType );
 
     private:
       unsigned _isView : 1;

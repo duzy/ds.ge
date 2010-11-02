@@ -108,6 +108,20 @@ namespace ds { namespace graphics {
       {
         return SkFloatToScalar(v);
       }
+
+      template<typename TChar> struct ChooseTextEncoding;
+      template<> struct ChooseTextEncoding<std::string::value_type>
+      {
+        static const SkPaint::TextEncoding value = SkPaint::kUTF8_TextEncoding;
+      };
+      template<> struct ChooseTextEncoding<std::wstring::value_type>
+      {
+        static const SkPaint::TextEncoding value = SkPaint::kUTF16_TextEncoding;
+      };
+      template<> struct ChooseTextEncoding<ds::ustring::value_type>
+      {
+        static const SkPaint::TextEncoding value = SkPaint::kUTF16_TextEncoding;
+      };
     }//namespace
 
     //--------------------------------------------------------------------
@@ -132,15 +146,17 @@ namespace ds { namespace graphics {
         to_SkPaint( paint, d ), this->draw( g, paint );
       }
 
-      template<typename D>
-      inline void draw( const ds::ustring & s, coordinate_t x, coordinate_t y, const D & d )
+      template<typename TChar, typename D>
+      inline void draw( const std::basic_string<TChar> & s, coordinate_t x, coordinate_t y, const D & d )
       {
         SkPaint paint;
-        SkTypeface *typeface = SkTypeface::CreateFromFile("t/foo.ttf");
+        SkTypeface *typeface = NULL;
+        typeface = SkTypeface::CreateFromFile("t/foo.ttf");
         //typeface = SkFontHost::CreateTypefaceFromFile("./foo.ttf");
         //typeface = SkFontHost::CreateTypeface(typeface, "sans", SkTypeface::kBoldItalic);
-        paint.setTextEncoding(SkPaint::kUTF8_TextEncoding);
+
         paint.setTypeface(typeface);
+        paint.setTextEncoding(ChooseTextEncoding<TChar>::value);
 
         SkScalar sx = to_SkScalar(x), sy = to_SkScalar(y);
         to_SkPaint( paint, d ), this->draw( s, sx, sy, paint );
@@ -152,12 +168,15 @@ namespace ds { namespace graphics {
       void draw( const box & g,         const SkPaint & p );
       void draw( const ring & g,        const SkPaint & p );
       void draw( const polygon & g,     const SkPaint & p );
-      void draw( const ds::ustring & s, SkScalar x, SkScalar y, const SkPaint & p );
+
+      template<typename TChar>
+      void draw( const std::basic_string<TChar> & s, SkScalar x, SkScalar y, const SkPaint & p );
     };//struct canvas::IMPL
 
-    void canvas::IMPL::draw( const ds::ustring & s, SkScalar x, SkScalar y, const SkPaint & paint )
+    template<typename TChar>
+    void canvas::IMPL::draw( const std::basic_string<TChar> & s, SkScalar x, SkScalar y, const SkPaint & paint )
     {
-      int bytes = s.size() * sizeof(s[0]);
+      const int bytes = s.size() * sizeof(s[0]);
       _skCanvas.drawText( s.c_str(), bytes, x, y, paint );
     }
 
@@ -339,6 +358,16 @@ namespace ds { namespace graphics {
       to_SkBitmap( bmp, img ), _imp->_skCanvas.drawBitmap( bmp, x, y );
     }
 
+    void canvas::render( const std::string & s, coordinate_t x, coordinate_t y, const brush & b )
+    {
+      _imp->draw( s, x, y, b );
+    }
+
+    void canvas::render( const std::wstring & s, coordinate_t x, coordinate_t y, const brush & b )
+    {
+      _imp->draw( s, x, y, b );
+    }
+
     void canvas::render( const ds::ustring & s, coordinate_t x, coordinate_t y, const brush & b )
     {
       _imp->draw( s, x, y, b );
@@ -372,6 +401,16 @@ namespace ds { namespace graphics {
     void canvas::stroke( const box & g, const pen & p )
     {
       _imp->draw( g, p );
+    }
+
+    void canvas::stroke( const std::string & s, coordinate_t x, coordinate_t y, const pen & p )
+    {
+      _imp->draw( s, x, y, p );
+    }
+
+    void canvas::stroke( const std::wstring & s, coordinate_t x, coordinate_t y, const pen & p )
+    {
+      _imp->draw( s, x, y, p );
     }
 
     void canvas::stroke( const ds::ustring & s, coordinate_t x, coordinate_t y, const pen & p )

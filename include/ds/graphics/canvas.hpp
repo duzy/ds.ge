@@ -78,6 +78,8 @@ namespace ds { namespace graphics {
       void render( const ring &,        const brush & = default_brush() );
       void render( const polygon &,     const brush & = default_brush() );
       void render( const ds::ustring &, coordinate_t x = 0, coordinate_t y = 0, const brush & = default_brush() );
+      void render( const std::string &, coordinate_t x = 0, coordinate_t y = 0, const brush & = default_brush() );
+      void render( const std::wstring &, coordinate_t x = 0, coordinate_t y = 0, const brush & = default_brush() );
 
       void stroke( const point &,       const pen & = default_pen() );
       void stroke( const segment &,     const pen & = default_pen() );
@@ -86,6 +88,8 @@ namespace ds { namespace graphics {
       void stroke( const ring &,        const pen & = default_pen() );
       void stroke( const polygon &,     const pen & = default_pen() );
       void stroke( const ds::ustring &, coordinate_t x = 0, coordinate_t y = 0, const pen & = default_pen() );
+      void stroke( const std::string &, coordinate_t x = 0, coordinate_t y = 0, const pen & = default_pen() );
+      void stroke( const std::wstring &, coordinate_t x = 0, coordinate_t y = 0, const pen & = default_pen() );
 
       static brush & default_brush();
       static pen &   default_pen();
