@@ -101,6 +101,11 @@ namespace ds { namespace graphics {
       {
         rect = SkRect::MakeLTRB(b.left(), b.top(), b.right(), b.bottom());
       }
+
+      inline SkScalar to_SkScalar( coordinate_t v )
+      {
+        return SkFloatToScalar(v);
+      }
     }//namespace
 
     //--------------------------------------------------------------------
@@ -125,13 +130,29 @@ namespace ds { namespace graphics {
         to_SkPaint( paint, d ), this->draw( g, paint );
       }
 
+      template<typename D>
+      inline void draw( const ds::ustring & s, coordinate_t x, coordinate_t y, const D & d )
+      {
+        SkPaint paint;
+        SkScalar sx = to_SkScalar(x), sy = to_SkScalar(y);
+        to_SkPaint( paint, d ), this->draw( s, sx, sy, paint );
+      }
+
       void draw( const point & g,       const SkPaint & p );
       void draw( const segment & g,     const SkPaint & p );
       void draw( const line & g,        const SkPaint & p );
       void draw( const box & g,         const SkPaint & p );
       void draw( const ring & g,        const SkPaint & p );
       void draw( const polygon & g,     const SkPaint & p );
+      void draw( const ds::ustring & s, SkScalar x, SkScalar y, const SkPaint & p );
     };//struct canvas::IMPL
+
+    void canvas::IMPL::draw( const ds::ustring & s, SkScalar x, SkScalar y, const SkPaint & paint )
+    {
+      int bytes = s.size() * sizeof(s[0]);
+      _skCanvas.drawText( s.c_str(), bytes, x, y, paint );
+      _skCanvas.drawText( "text", 4, 10, 10, paint );
+    }
 
     void canvas::IMPL::draw( const point & g, const SkPaint & p )
     {
@@ -311,6 +332,11 @@ namespace ds { namespace graphics {
       to_SkBitmap( bmp, img ), _imp->_skCanvas.drawBitmap( bmp, x, y );
     }
 
+    void canvas::render( const ds::ustring & s, coordinate_t x, coordinate_t y, const brush & b )
+    {
+      _imp->draw( s, x, y, b );
+    }
+
     void canvas::stroke( const point & g, const pen & p )
     {
       _imp->draw( g, p );
@@ -339,6 +365,11 @@ namespace ds { namespace graphics {
     void canvas::stroke( const box & g, const pen & p )
     {
       _imp->draw( g, p );
+    }
+
+    void canvas::stroke( const ds::ustring & s, coordinate_t x, coordinate_t y, const pen & p )
+    {
+      _imp->draw( s, x, y, p );
     }
 
   }//namespace graphics

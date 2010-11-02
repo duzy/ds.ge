@@ -12,6 +12,7 @@
 #   include <boost/noncopyable.hpp>
 #   include "visibility.hpp"
 #   include "point.hpp"
+#   include <ds/ustring.hpp>
 
 namespace ds { namespace graphics {
 
@@ -76,7 +77,7 @@ namespace ds { namespace graphics {
       void render( const box &,         const brush & = default_brush() );
       void render( const ring &,        const brush & = default_brush() );
       void render( const polygon &,     const brush & = default_brush() );
-      //void render( const ds::ustring &, const brush & = default_brush() );
+      void render( const ds::ustring &, coordinate_t x = 0, coordinate_t y = 0, const brush & = default_brush() );
 
       void stroke( const point &,       const pen & = default_pen() );
       void stroke( const segment &,     const pen & = default_pen() );
@@ -84,7 +85,7 @@ namespace ds { namespace graphics {
       void stroke( const box &,         const pen & = default_pen() );
       void stroke( const ring &,        const pen & = default_pen() );
       void stroke( const polygon &,     const pen & = default_pen() );
-      //void stroke( const ds::ustring &, const pen & = default_pen() );
+      void stroke( const ds::ustring &, coordinate_t x = 0, coordinate_t y = 0, const pen & = default_pen() );
 
       static brush & default_brush();
       static pen &   default_pen();

@@ -98,5 +98,12 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
     BOOST_CHECK( mm.convert_pixels( pixel_type ) );
     c.render( mm, 400, 30 );
   }
+  {
+    ds::ustring str((ds::uchar*)L"foobar");
+    b.color = color::rgba( 0.10, 0.10, 0.10, 0.8 );
+    p.color = color::rgba( 0.25, 0.20, 0.25, 1.0 );
+    c.render( str, 200, 10, b );
+    c.stroke( str, 200, 10, p );
+  }
   m.save( "test-canvas.png" );
 }
