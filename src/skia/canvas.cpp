@@ -21,6 +21,8 @@
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkRect.h>
 #include <skia/core/SkPath.h>
+#include <skia/core/SkTypeface.h>
+#include <skia/core/SkFontHost.h>
 #include <ds/debug.hpp>
 
 namespace ds { namespace graphics {
@@ -134,6 +136,12 @@ namespace ds { namespace graphics {
       inline void draw( const ds::ustring & s, coordinate_t x, coordinate_t y, const D & d )
       {
         SkPaint paint;
+        SkTypeface *typeface = SkTypeface::CreateFromFile("t/foo.ttf");
+        //typeface = SkFontHost::CreateTypefaceFromFile("./foo.ttf");
+        //typeface = SkFontHost::CreateTypeface(typeface, "sans", SkTypeface::kBoldItalic);
+        paint.setTextEncoding(SkPaint::kUTF8_TextEncoding);
+        paint.setTypeface(typeface);
+
         SkScalar sx = to_SkScalar(x), sy = to_SkScalar(y);
         to_SkPaint( paint, d ), this->draw( s, sx, sy, paint );
       }
@@ -151,7 +159,6 @@ namespace ds { namespace graphics {
     {
       int bytes = s.size() * sizeof(s[0]);
       _skCanvas.drawText( s.c_str(), bytes, x, y, paint );
-      _skCanvas.drawText( "text", 4, 10, 10, paint );
     }
 
     void canvas::IMPL::draw( const point & g, const SkPaint & p )
