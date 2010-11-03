@@ -14,6 +14,8 @@
 #   include <string>
 #   include <iosfwd>
 
+#   define NO_METHOD_convert_pixels
+
 namespace ds { namespace graphics {
 
     namespace gil
@@ -63,8 +65,11 @@ namespace ds { namespace graphics {
 
       void swap( image & other );
 
-      // TODO: use it instead of convert_pixels
+# ifndef NO_METHOD_convert_pixels
       template<PixelType PT> bool convert() { convert_pixels(PT); }
+# else
+      template<PixelType PT> bool convert();
+# endif//NO_METHOD_convert_pixels
 
       std::size_t width() const;
       std::size_t height() const;
@@ -92,7 +97,9 @@ namespace ds { namespace graphics {
       bool save( std::ostream & is );
 
     private:
+# ifndef NO_METHOD_convert_pixels
       bool convert_pixels( PixelType );
+# endif//NO_METHOD_convert_pixels
 
     private:
       unsigned _isView : 1;

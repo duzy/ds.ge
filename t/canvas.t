@@ -98,8 +98,7 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
     BOOST_CHECK( ok = mm.load("t/eyes.png") );
     if (ok) {
       BOOST_CHECK( mm.ABGR_8888_PIXEL == mm.pixel_type() );
-      //BOOST_CHECK( mm.convert_pixels( pixel_type ) );
-      BOOST_CHECK( mm.convert<image::ABGR_8888_PIXEL>() );
+      BOOST_CHECK( mm.convert<image::RGBA_8888_PIXEL>() );
       c.render( mm, 400, 30 );
     }
   }
@@ -108,8 +107,7 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
     BOOST_CHECK( ok = mm.load("t/incognito.png") );
     if (ok) {
       BOOST_CHECK( mm.ABGR_8888_PIXEL == mm.pixel_type() );
-      //BOOST_CHECK( mm.convert_pixels( pixel_type ) );
-      BOOST_CHECK( mm.convert<image::ABGR_8888_PIXEL>() );
+      BOOST_CHECK( mm.convert<image::RGBA_8888_PIXEL>() );
       c.render( mm, 400, 130 );
     }
   }

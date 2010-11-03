@@ -3,8 +3,6 @@
  *    All rights reserved by Zhan Xin-Ming£¨Õ²ÐÀÃú£©
  *    Email: <duzy@duzy.info, duzy.chan@gmail.com>
  *
- *    $Id: image.ipp 801 2009-09-15 14:02:44Z duzy $
- *
  **/
 
 #include <ds/graphics/image.hpp>
@@ -25,9 +23,11 @@ std::clog
 
 namespace ds { namespace graphics {
 
+# ifndef NO_METHOD_convert_pixels
+
     namespace
     {
-      struct pixel_converter
+      struct pixels_converter
       {
         typedef bool result_type;
 
@@ -95,66 +95,7 @@ namespace ds { namespace graphics {
         {
           return false;
         }
-      };//struct pixel_converter
-
-      /////////////////////////////////////////////
-
-      template<image::PixelType PT> struct gil_image;
-      template<> struct gil_image<image::ARGB_8888_PIXEL> { typedef gil::argb8_image_t  type; };
-      template<> struct gil_image<image::ABGR_8888_PIXEL> { typedef gil::abgr8_image_t  type; };
-      template<> struct gil_image<image::RGBA_8888_PIXEL> { typedef gil::rgba8_image_t  type; };
-      template<> struct gil_image<image::BGRA_8888_PIXEL> { typedef gil::bgra8_image_t  type; };
-      template<> struct gil_image<image::ARGB_4444_PIXEL> { typedef gil::argb4_image_t  type; };
-      template<> struct gil_image<image::ABGR_4444_PIXEL> { typedef gil::abgr4_image_t  type; };
-      template<> struct gil_image<image::RGBA_4444_PIXEL> { typedef gil::rgba4_image_t  type; };
-      template<> struct gil_image<image::BGRA_4444_PIXEL> { typedef gil::bgra4_image_t  type; };
-      template<> struct gil_image<image::RGB_888_PIXEL  > { typedef gil::rgb8_image_t   type; };
-      template<> struct gil_image<image::BGR_888_PIXEL  > { typedef gil::bgr8_image_t   type; };
-      template<> struct gil_image<image::RGB_565_PIXEL  > { typedef gil::rgb565_image_t type; };
-      template<> struct gil_image<image::BGR_565_PIXEL  > { typedef gil::bgr565_image_t type; };
-
-      template<image::PixelType PT>
-      struct converter
-      {
-        typedef bool result_type;
-        typedef typename gil_image<PT>::type gil_image_t;
-        
-        int width, height;
-        gil_image_t output;
-
-        converter(int w, int h) : width(w), height(h), output() {}
-
-        template<
-          template<typename> class Iterator,
-          template<typename> class Locator,
-          template<typename,typename> class Pixel,
-          typename VT, typename Layout >
-        result_type operator()( const boost::gil::image_view<Locator<Iterator<Pixel<VT,Layout>*> > > & v ) /*const*/
-        {
-          dsI( output.width() == 0 );
-          dsI( output.height() == 0 );
-          output.recreate(width, height);
-          boost::gil::copy_and_convert_pixels( v, boost::gil::view(output) );
-          return output.width() == width && output.height() == height;
-        }
-
-        template<
-          template<typename> class Iterator,
-          template<typename> class Locator,
-          template<typename,typename,typename> class PackedPixel,
-          typename VT, typename PF, typename Layout >
-        result_type operator()( const boost::gil::image_view<Locator<Iterator<PackedPixel<VT,PF,Layout>*> > > & v ) /*const*/
-        {
-          return false;
-        }
-      };//struct converter<>
-
-      template<> struct converter<image::NO_PIXEL>
-      {
-        typedef bool result_type;
-        template<typename V> result_type operator()(const V &) { return false; }
-      };//struct converter<image::NO_PIXEL>
-
+      };//struct pixels_converter
     }//namespace
 
     bool image::convert_pixels( PixelType pt )
@@ -181,57 +122,106 @@ namespace ds { namespace graphics {
       boost::gil::copy_and_convert_pixels( v1, v2 );
       return true;
 #     else
-      return boost::gil::apply_operation( v1, v2, pixel_converter() );
+      return boost::gil::apply_operation( v1, v2, pixels_converter() );
 #     endif
     }
 
     /////////////////////////////////////////////////////////////////
+# else//NO_METHOD_convert_pixels
+#   include "image_metafuns.h"
 
-#define IMPLENMENT_CONVERT(PIXEL_TYPE)                              \
+    namespace
+    {
+      template<image::PixelType PT>
+      struct converter
+      {
+        typedef bool result_type;
+        typedef typename gil_image<PT>::type gil_image_t;
+        
+        int width, height;
+        gil_image_t & output;
+
+        converter(int w, int h, gil_image_t & o) : width(w), height(h), output(o) {}
+
+        template<
+          template<typename> class Iterator,
+          template<typename> class Locator,
+          template<typename,typename> class Pixel,
+          typename VT, typename Layout >
+        result_type operator()( const boost::gil::image_view<Locator<Iterator<Pixel<VT,Layout>*> > > & v ) /*const*/
+        {
+          dsI( output.width() == 0 );
+          dsI( output.height() == 0 );
+          output.recreate(width, height);
+          boost::gil::copy_and_convert_pixels( v, boost::gil::view(output) );
+          return (output.width() == width) && (output.height() == height);
+        }
+
+        template<
+          template<typename> class Iterator,
+          template<typename> class Locator,
+          template<typename,typename,typename> class PackedPixel,
+          typename VT, typename PF, typename Layout >
+        result_type operator()( const boost::gil::image_view<Locator<Iterator<PackedPixel<VT,PF,Layout>*> > > & v ) /*const*/
+        {
+          return false;
+        }
+      };//struct converter<>
+
+      template<> struct converter<image::NO_PIXEL>
+      {
+        typedef bool result_type;
+        template<typename V> result_type operator()(const V &) { return false; }
+      };//struct converter<image::NO_PIXEL>
+
+      bool convert_pixels(gil::any_image_t::view_t v1, gil::any_image_t::view_t v2)
+      {
+        return false;
+      }
+    }//namespace
+
+    // TODO: reduce a copy-construction produced by 'new gil::image(output)'
+    // TODO: refactor this template
+#   define HANDLE_PIXEL_TYPE(PIXEL_TYPE,GIL_IMAGE_TYPE)             \
     template<> bool image::convert<image::PIXEL_TYPE>()             \
     {                                                               \
-      if ( !_m /* || _v */ ) return false;                          \
-      if (pixel_type() == PIXEL_TYPE) return false;                 \
+      {                                                             \
+        const PixelType pt = this->pixel_type();                    \
+        if (pt == PIXEL_TYPE) return false;                         \
+        if (pt == NO_PIXEL) return false;                           \
+        dsI( this->_m != NULL || this->_v != NULL );                \
+      }                                                             \
                                                                     \
       image t; this->swap(t);                                       \
-      dsI( t._m != 0 || t._v != 0 );                                \
-      dsI( this->_m == 0 && this->_v == 0 );                        \
+      dsI( t._m != NULL && t._v != NULL );                          \
+      dsI( this->_m == NULL && this->_v == NULL );                  \
                                                                     \
       gil::any_image_t::view_t vin = t._isView                      \
-        ? t._v->any() : boost::gil::view( t._m->any() );            \
+        ? t._v->any() : t._m->any_view();                           \
                                                                     \
-      converter<image::PIXEL_TYPE> conv( t.width(), t.height() );   \
-      if (boost::gil::apply_operation( vin, conv )) {               \
-        dsI(conv.output.width() == t.width());                      \
-        dsI(conv.output.height() == t.height());                    \
-        dsI(this->_m == NULL);                                      \
-        this->_isView = 0;                                          \
-        this->_m = new gil::image(conv.output);                     \
-        return true;                                                \
-      }                                                             \
-      return false;                                                 \
+      GIL_IMAGE_TYPE output;                                        \
+      converter<image::PIXEL_TYPE> conv( t.width(), t.height(), output ); \
+      if (boost::gil::apply_operation( vin, conv )) {                   \
+        dsI(output.width() == t.width());                               \
+        dsI(output.height() == t.height());                             \
+        dsI(this->_m == NULL);                                          \
+        this->_isView = 0;                                              \
+        this->_m = new gil::image(output);                              \
+        return true;                                                    \
+      }                                                                 \
+      return false;                                                     \
     }
-    /*
+    HANDLE_ALL_PIXEL_TYPES()
+#   undef HANDLE_PIXEL_TYPE
+
     template<> bool image::convert<image::NO_PIXEL>()
     {
       if (pixel_type() == NO_PIXEL) return false;
       image t; this->swap(t);
       return true;
     }
-    IMPLENMENT_CONVERT(ARGB_8888_PIXEL);
-    IMPLENMENT_CONVERT(ABGR_8888_PIXEL);
-    IMPLENMENT_CONVERT(RGBA_8888_PIXEL);
-    IMPLENMENT_CONVERT(BGRA_8888_PIXEL);
-    IMPLENMENT_CONVERT(ARGB_4444_PIXEL);
-    IMPLENMENT_CONVERT(ABGR_4444_PIXEL);
-    IMPLENMENT_CONVERT(RGBA_4444_PIXEL);
-    IMPLENMENT_CONVERT(BGRA_4444_PIXEL);
-    IMPLENMENT_CONVERT(RGB_888_PIXEL  );
-    IMPLENMENT_CONVERT(BGR_888_PIXEL  );
-    IMPLENMENT_CONVERT(RGB_565_PIXEL  );
-    IMPLENMENT_CONVERT(BGR_565_PIXEL  );
-    */
-#undef IMPLENMENT_CONVERT
+
+# endif//NO_METHOD_convert_pixels
 
   }//namespace graphics
 }//namespace ds
