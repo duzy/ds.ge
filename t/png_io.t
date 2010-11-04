@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( png_reader_test )
 
     ds::graphics::gil::png_reader rdr( i );
     ds::graphics::gil::image m;
-    rdr.read_image( m.any() );
+    rdr.read( m.any() );
     BOOST_CHECK( m.width () == 60 );
     BOOST_CHECK( m.height() == 60 );
     BOOST_CHECK( image_pixel_size(m.any()) == 4 );
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE( png_reader_test )
 
     ds::graphics::gil::image m;
     ds::graphics::gil::png_reader r( is );
-    r.read_image( m.any() );
+    r.read( m.any() );
     BOOST_CHECK( m.width () == 60 );
     BOOST_CHECK( m.height() == 60 );
     BOOST_CHECK( image_pixel_size(m.any()) == 4 );
@@ -127,8 +127,7 @@ void test_png_writer()
     BOOST_CHECK( os );
 
     ds::graphics::gil::png_writer w( os );
-    //w.write_image( image );
-    w.write_image( image.any() );
+    w.write( image ); //w.write( image.any() );
   }
   {
     std::ifstream i( "test-out.png", i.binary | i.in );
@@ -137,7 +136,7 @@ void test_png_writer()
     ds::graphics::gil::image m;
     ds::graphics::gil::png_reader r( i );
       
-    r.read_image( m.any() );
+    r.read( m.any() );
 
     BOOST_CHECK( m.width () == 5 );
     BOOST_CHECK( m.height() == 5 );

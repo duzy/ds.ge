@@ -152,10 +152,12 @@ namespace ds { namespace graphics { namespace gil {
 }//namespace ds
 
 namespace boost { namespace gil {
+#if 1
     template <typename ChannelValue, typename TS, typename Layout>
     struct channel_type<packed_pixel<ChannelValue,TS,Layout> > {
       typedef ChannelValue type; // FIXME: the channel value type
     };
+#endif
 
     // template <typename ChannelValue, typename TS, typename Layout>
     // struct default_color_converter_impl<rgba_t,packed_pixel<ChannelValue,TS,Layout> >

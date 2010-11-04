@@ -103,5 +103,5 @@ $(call sm-load-subdirs)
 
 ###########################################
 
-test: out/debug/bin/all-units.test ; @echo "Running test set $<..."&& $<
+test: out/$V/bin/all-units.test ; @echo "Running test set $<..."&& $<
 test-goal: goal-dsge test

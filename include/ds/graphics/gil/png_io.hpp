@@ -14,9 +14,11 @@ extern "C" {
 #	include <boost/gil/extension/io/png_io.hpp>
 #	include <boost/gil/extension/io/png_dynamic_io.hpp>
 #	include <istream>
-# if 0
 #   include <cxxabi.h>
-# endif
+/*
+  int cxa_status;
+  std::clog<<__FILE__<<":"<<__LINE__<<":"<<abi::__cxa_demangle(typeid(view).name(), 0, 0, &cxa_status)<<std::endl;
+*/
 
 namespace ds { namespace graphics { namespace gil {
 
@@ -76,11 +78,22 @@ namespace ds { namespace graphics { namespace gil {
         template <typename View>
         void apply(const View& view)
         {
-          this->read_view(view);
+          this->read(view);
         }
 
-        template <typename View>
-        void read_view(const View& view)
+        template<
+          template<typename> class Iterator,
+          template<typename> class Locator,
+          typename VT, typename PF, typename Layout >
+        void read(const boost::gil::image_view<Locator<Iterator<boost::gil::packed_pixel<VT,PF,Layout>*> > > & view)
+        {
+          // TODO: read packed pixels
+          int cxa_status;
+          std::clog<<__FILE__<<":"<<__LINE__<<":TODO: read "<<abi::__cxa_demangle(typeid(view).name(), 0, 0, &cxa_status)<<std::endl;
+        }
+
+        template <typename Locator>
+        void read(const boost::gil::image_view<Locator> & view)
         {
           using boost::gil::detail::png_read_support_private;
           using boost::gil::color_space_type;
@@ -89,10 +102,12 @@ namespace ds { namespace graphics { namespace gil {
           using boost::gil::io_error;
           using boost::gil::pixel;
           using boost::gil::layout;
-          typedef typename channel_type<View>::type channel_t;
-          typedef typename color_space_type<View>::type color_space_t;
+          //typedef typename channel_type<View>::type channel_t;
+          //typedef typename color_space_type<View>::type color_space_t;
+          typedef typename channel_type<Locator>::type channel_t;
+          typedef typename color_space_type<Locator>::type color_space_t;
           typedef layout<color_space_t> layout_t;
-          typedef pixel<channel_t, layout_t > pixel_t;
+          typedef pixel<channel_t, layout_t> pixel_t;
 
           png_uint_32 width, height;
           int bit_depth, color_type, interlace_type;
@@ -113,12 +128,8 @@ namespace ds { namespace graphics { namespace gil {
         }
 
         template <typename Views>
-        void read_view(const boost::gil::any_image_view<Views> & view)
+        void read(const boost::gil::any_image_view<Views> & view)
         {
-          #if 0
-          int cxa_status;
-          std::clog<<__FILE__<<":"<<__LINE__<<":"<<abi::__cxa_demangle(typeid(view).name(), 0, 0, &cxa_status)<<std::endl;
-          #endif
           using boost::gil::detail::png_read_is_supported;
           using boost::gil::detail::dynamic_io_fnobj;
           dynamic_io_fnobj <png_read_is_supported, png_reader> op(this);
@@ -126,23 +137,15 @@ namespace ds { namespace graphics { namespace gil {
         }
 
         template <class Pixel, bool IsPlanar, class Alloc>
-        void read_image(const boost::gil::image<Pixel, IsPlanar, Alloc>& m)
+        void read(/*const*/ boost::gil::image<Pixel, IsPlanar, Alloc>& m)
         {
-        #if 0
-          int cxa_status;
-          std::clog<<__FILE__<<":"<<__LINE__<<":"<<abi::__cxa_demangle(typeid(m).name(), 0, 0, &cxa_status)<<std::endl;
-        #endif
           m.recreate(get_dimensions());
-          this->read_view(view(m));
+          this->read(view(m));
         }
 
         template <typename Images>
-        void read_image(/*const*/ boost::gil::any_image<Images>& m)
+        void read(/*const*/ boost::gil::any_image<Images>& m)
         {
-          #if 0
-          int cxa_status;
-          std::clog<<__FILE__<<":"<<__LINE__<<":"<<abi::__cxa_demangle(typeid(m).name(), 0, 0, &cxa_status)<<std::endl;
-          #endif
           using boost::gil::detail::png_type_format_checker;
           using boost::gil::detail::dynamic_io_fnobj;
           using boost::gil::construct_matched;
@@ -154,7 +157,7 @@ namespace ds { namespace graphics { namespace gil {
             boost::gil::io_error("png_reader_dynamic::read_image(): no matching image type between those of the given any_image and that of the file");
           } else {
             m.recreate(width,height);
-            this->read_view( boost::gil::view(m) );
+            this->read( boost::gil::view(m) );
           }
         }
 
@@ -203,11 +206,22 @@ namespace ds { namespace graphics { namespace gil {
         template <typename View>
         void apply(const View& view)
         {
-          this->write_view(view);
+          this->write(view);
         }
 
-        template <typename View>
-        void write_view(const View & view)
+        template<
+          template<typename> class Iterator,
+          template<typename> class Locator,
+          typename VT, typename PF, typename Layout >
+        void write(const boost::gil::image_view<Locator<Iterator<boost::gil::packed_pixel<VT,PF,Layout>*> > > & view)
+        {
+          // TODO: write packed pixels
+          int cxa_status;
+          std::clog<<__FILE__<<":"<<__LINE__<<":TODO: write "<<abi::__cxa_demangle(typeid(view).name(), 0, 0, &cxa_status)<<std::endl;
+        }
+
+        template <typename Locator>
+        void write(const boost::gil::image_view<Locator> & view)
         {
           using boost::gil::detail::png_write_support_private;
           using boost::gil::color_space_type;
@@ -215,20 +229,20 @@ namespace ds { namespace graphics { namespace gil {
           using boost::gil::little_endian;
           using boost::gil::pixel;
           using boost::gil::layout;
+          //typedef typename channel_type<View>::type channel_t;
+          //typedef typename color_space_type<View>::type color_space_t;
+          typedef typename channel_type<Locator>::type channel_t;
+          typedef typename color_space_type<Locator>::type color_space_t;
           png_set_IHDR(_png, _info, view.width(), view.height(),
-                       png_write_support_private<typename channel_type<View>::type,
-                       typename color_space_type<View>::type>::bit_depth,
-                       png_write_support_private<typename channel_type<View>::type,
-                       typename color_space_type<View>::type>::color_type,
+                       png_write_support_private<channel_t,color_space_t>::bit_depth,
+                       png_write_support_private<channel_t,color_space_t>::color_type,
                        PNG_INTERLACE_NONE,
                        PNG_COMPRESSION_TYPE_DEFAULT,PNG_FILTER_TYPE_DEFAULT);
           png_write_info(_png,_info);
           if (little_endian() &&
-              png_write_support_private<typename channel_type<View>::type,
-                                        typename color_space_type<View>::type>::bit_depth>8)
+              png_write_support_private<channel_t,color_space_t>::bit_depth>8)
             png_set_swap(_png);
-          std::vector<pixel<typename channel_type<View>::type,
-                            layout<typename color_space_type<View>::type> > > row(view.width());
+          std::vector<pixel<channel_t,layout<color_space_t> > > row(view.width());
           for (int y=0;y<view.height();++y) {
             std::copy(view.row_begin(y),view.row_end(y),row.begin());
             png_write_row(_png,(png_bytep)&row.front());
@@ -237,12 +251,8 @@ namespace ds { namespace graphics { namespace gil {
         }
 
         template <typename Views>
-        void write_view(const boost::gil::any_image_view<Views>& v)
+        void write(const boost::gil::any_image_view<Views>& v)
         {
-          #if 0
-          int cxa_status;
-          std::clog<<__FILE__<<":"<<__LINE__<<":"<<abi::__cxa_demangle(typeid(v).name(), 0, 0, &cxa_status)<<std::endl;
-          #endif
           using boost::gil::detail::png_read_is_supported;
           using boost::gil::detail::dynamic_io_fnobj;
           dynamic_io_fnobj <png_read_is_supported, png_writer> op(this);
@@ -250,20 +260,16 @@ namespace ds { namespace graphics { namespace gil {
         }
 
         template <class Pixel, bool IsPlanar, class Alloc>
-        void write_image(const boost::gil::image<Pixel, IsPlanar, Alloc>& m)
+        void write(const boost::gil::image<Pixel, IsPlanar, Alloc>& m)
         {
-          this->write_view(boost::gil::view(m));
+          this->write(boost::gil::view(m));
         }
 
         template <typename Images>
-        void write_image(const boost::gil::any_image<Images>& im)
+        void write(const boost::gil::any_image<Images>& im)
         {
-          #if 0
-          int cxa_status;
-          std::clog<<__FILE__<<":"<<__LINE__<<":"<<abi::__cxa_demangle(typeid(im).name(), 0, 0, &cxa_status)<<std::endl;
-          #endif
           typename boost::gil::any_image<Images>::const_view_t v = boost::gil::const_view(im);
-          this->write_view(v);
+          this->write(v);
         }
 
       private:
