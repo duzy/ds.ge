@@ -8,6 +8,5 @@
  **/
 
 #ifndef __DS_GRAPHICS_SEGMENT__hpp____by_Duzy_Chan__
-#define __DS_GRAPHICS_SEGMENT__hpp____by_Duzy_Chan__ 1
 #       include "bits/segment.h"
 #endif//__DS_GRAPHICS_SEGMENT__hpp____by_Duzy_Chan__
