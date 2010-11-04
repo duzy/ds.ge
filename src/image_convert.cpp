@@ -23,7 +23,8 @@ std::clog
 
 namespace ds { namespace graphics {
 
-# ifndef NO_METHOD_convert_pixels
+# ifdef NO_METHOD_convert_pixels
+#   include "image_metafuns.h"
 
     namespace
     {
@@ -42,7 +43,7 @@ namespace ds { namespace graphics {
         result_type operator()
         ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::pixel<VT1,Layout1>*> > > & v1,
           const boost::gil::image_view<Locator2<Iterator2<boost::gil::pixel<VT2,Layout2>*> > > & v2
-          ) /*const*/
+          ) const
         {
           boost::gil::copy_and_convert_pixels( v1, v2 );
           return true;
@@ -59,8 +60,9 @@ namespace ds { namespace graphics {
         result_type operator()
         ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::packed_pixel<VT1, PF1, Layout1>*> > > & v1,
           const boost::gil::image_view<Locator2<Iterator2<boost::gil::packed_pixel<VT2, PF2, Layout2>*> > > & v2
-          ) /*const*/
+          ) const
         {
+          // TODO: convert pixels...
           return false;
         }
 
@@ -75,8 +77,9 @@ namespace ds { namespace graphics {
         result_type operator()
         ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::packed_pixel<VT1, PF, Layout1>*> > > & v1,
           const boost::gil::image_view<Locator2<Iterator2<boost::gil::       pixel<VT2,     Layout2>*> > > & v2
-          ) /*const*/
+          ) const
         {
+          // TODO: convert pixels...
           return false;
         }
 
@@ -91,47 +94,15 @@ namespace ds { namespace graphics {
         result_type operator()
         ( const boost::gil::image_view<Locator1<Iterator1<boost::gil::       pixel<VT1,     Layout1>*> > > & v1,
           const boost::gil::image_view<Locator2<Iterator2<boost::gil::packed_pixel<VT2, PF, Layout2>*> > > & v2
-          ) /*const*/
+          ) const
         {
+          // TODO: convert pixels...
           return false;
         }
       };//struct pixels_converter
-    }//namespace
 
-    bool image::convert_pixels( PixelType pt )
-    {
-      if (pixel_type() == pt) return false;
+      /////////////////////////////////////////////////////////////////////
 
-      image t;
-      this->swap( t );
-
-      dsI( t._m != 0 || t._v != 0 );
-      dsI( this->_m == 0 && this->_v == 0 );
-
-      if (pt == NO_PIXEL) return true;
-
-      bool ok = this->create( t.width(), t.height(), pt );
-      dsI( ok );
-
-      gil::any_image_t::view_t v1 = t._isView ? t._v->any()
-        : boost::gil::view( t._m->any() );
-      gil::any_image_t::view_t v2 = this->_isView ? this->_v->any()
-        : boost::gil::view( this->_m->any() );
-
-#     if 0
-      boost::gil::copy_and_convert_pixels( v1, v2 );
-      return true;
-#     else
-      return boost::gil::apply_operation( v1, v2, pixels_converter() );
-#     endif
-    }
-
-    /////////////////////////////////////////////////////////////////
-# else//NO_METHOD_convert_pixels
-#   include "image_metafuns.h"
-
-    namespace
-    {
       template<image::PixelType PT>
       struct converter
       {
@@ -164,6 +135,7 @@ namespace ds { namespace graphics {
           typename VT, typename PF, typename Layout >
         result_type operator()( const boost::gil::image_view<Locator<Iterator<PackedPixel<VT,PF,Layout>*> > > & v ) /*const*/
         {
+          // TODO: convert packed pixels 
           return false;
         }
       };//struct converter<>
@@ -174,26 +146,42 @@ namespace ds { namespace graphics {
         template<typename V> result_type operator()(const V &) { return false; }
       };//struct converter<image::NO_PIXEL>
 
-      bool convert_pixels(gil::any_image_t::view_t v1, gil::any_image_t::view_t v2)
-      {
-        return false;
-      }
     }//namespace
 
-    // TODO: reduce a copy-construction produced by 'new gil::image(output)'
-    // TODO: refactor this template
 #   define HANDLE_PIXEL_TYPE(PIXEL_TYPE,GIL_IMAGE_TYPE)             \
     template<> bool image::convert<image::PIXEL_TYPE>()             \
     {                                                               \
-      {                                                             \
-        const PixelType pt = this->pixel_type();                    \
-        if (pt == PIXEL_TYPE) return false;                         \
-        if (pt == NO_PIXEL) return false;                           \
-        dsI( this->_m != NULL || this->_v != NULL );                \
-      }                                                             \
+      dsI( PIXEL_TYPE != NO_PIXEL );                                \
+                                                                    \
+      const PixelType pt = this->pixel_type();                      \
+      if (pt == PIXEL_TYPE) return false;                           \
+      if (pt == NO_PIXEL  ) return false;                           \
+      dsI( this->_m != NULL || this->_v != NULL );                  \
                                                                     \
       image t; this->swap(t);                                       \
-      dsI( t._m != NULL && t._v != NULL );                          \
+      dsI( t._m     != NULL && t._v     != NULL );                  \
+      dsI( this->_m == NULL && this->_v == NULL );                  \
+                                                                    \
+      bool ok = this->create( t.width(), t.height(), PIXEL_TYPE );      \
+      dsI( ok );                                                        \
+                                                                        \
+      gil::any_image_t::view_t v1 = t._isView ? t._v->any() : t._m->any_view(); \
+      gil::any_image_t::view_t v2 = this->_isView ? this->_v->any() : this->_m->any_view(); \
+      return boost::gil::apply_operation( v1, v2, pixels_converter() ); \
+    }
+
+    // TODO: reduce a copy-construction produced by 'new gil::image(output)'
+    // TODO: refactor this template
+#   define HANDLE_PIXEL_TYPE_(PIXEL_TYPE,GIL_IMAGE_TYPE)            \
+    template<> bool image::convert<image::PIXEL_TYPE>()             \
+    {                                                               \
+      const PixelType pt = this->pixel_type();                      \
+      if (pt == PIXEL_TYPE) return false;                           \
+      if (pt == NO_PIXEL  ) return false;                           \
+      dsI( this->_m != NULL || this->_v != NULL );                  \
+                                                                    \
+      image t; this->swap(t);                                       \
+      dsI( t._m     != NULL && t._v     != NULL );                  \
       dsI( this->_m == NULL && this->_v == NULL );                  \
                                                                     \
       gil::any_image_t::view_t vin = t._isView                      \

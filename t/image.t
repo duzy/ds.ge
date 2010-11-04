@@ -133,6 +133,7 @@ BOOST_AUTO_TEST_CASE( image_load_test )
       BOOST_CHECK( image.ABGR_8888_PIXEL == image.pixel_type() );
     }
   }
+# if 0
   {
     ds::graphics::image image;
     BOOST_CHECK( ok = image.load("t/10x10-ABGR.png") );
@@ -173,6 +174,7 @@ BOOST_AUTO_TEST_CASE( image_load_test )
       BOOST_CHECK( image.RGB_888_PIXEL == image.pixel_type() );
     }
   }
+# endif
 }
 
 BOOST_AUTO_TEST_CASE( image_save_test )

@@ -14,6 +14,9 @@ extern "C" {
 #	include <boost/gil/extension/io/png_io.hpp>
 #	include <boost/gil/extension/io/png_dynamic_io.hpp>
 #	include <istream>
+# if 0
+#   include <cxxabi.h>
+# endif
 
 namespace ds { namespace graphics { namespace gil {
 
@@ -109,30 +112,37 @@ namespace ds { namespace graphics { namespace gil {
           png_read_end(_png,NULL);
         }
 
-#       if 0
-        template <typename Images>
-        void read_any_view(const typename boost::gil::any_image<Images>::view_t & view)
-#       else
-        template <typename View>
-        void read_any_view(const View& view)
-#       endif
+        template <typename Views>
+        void read_view(const boost::gil::any_image_view<Views> & view)
         {
+          #if 0
+          int cxa_status;
+          std::clog<<__FILE__<<":"<<__LINE__<<":"<<abi::__cxa_demangle(typeid(view).name(), 0, 0, &cxa_status)<<std::endl;
+          #endif
           using boost::gil::detail::png_read_is_supported;
           using boost::gil::detail::dynamic_io_fnobj;
           dynamic_io_fnobj <png_read_is_supported, png_reader> op(this);
           boost::gil::apply_operation(view,op);
         }
 
-        template <typename Image>
-        void read_image(Image& im)
+        template <class Pixel, bool IsPlanar, class Alloc>
+        void read_image(const boost::gil::image<Pixel, IsPlanar, Alloc>& m)
         {
-          im.recreate(get_dimensions());
-          this->read_view(view(im));
+        #if 0
+          int cxa_status;
+          std::clog<<__FILE__<<":"<<__LINE__<<":"<<abi::__cxa_demangle(typeid(m).name(), 0, 0, &cxa_status)<<std::endl;
+        #endif
+          m.recreate(get_dimensions());
+          this->read_view(view(m));
         }
 
         template <typename Images>
-        void read_image(boost::gil::any_image<Images>& m)
+        void read_image(/*const*/ boost::gil::any_image<Images>& m)
         {
+          #if 0
+          int cxa_status;
+          std::clog<<__FILE__<<":"<<__LINE__<<":"<<abi::__cxa_demangle(typeid(m).name(), 0, 0, &cxa_status)<<std::endl;
+          #endif
           using boost::gil::detail::png_type_format_checker;
           using boost::gil::detail::dynamic_io_fnobj;
           using boost::gil::construct_matched;
@@ -144,7 +154,7 @@ namespace ds { namespace graphics { namespace gil {
             boost::gil::io_error("png_reader_dynamic::read_image(): no matching image type between those of the given any_image and that of the file");
           } else {
             m.recreate(width,height);
-            this->read_any_view( boost::gil::view(m) );
+            this->read_view( boost::gil::view(m) );
           }
         }
 
@@ -226,31 +236,34 @@ namespace ds { namespace graphics { namespace gil {
           png_write_end(_png,_info);
         }
 
-#       if 0
-        template <typename Images>
-        void write_any_view(const typename boost::gil::any_image<Images>::const_view_t& v)
-#       else
-        template <typename View>
-        void write_any_view(const View & v)
-#       endif
+        template <typename Views>
+        void write_view(const boost::gil::any_image_view<Views>& v)
         {
+          #if 0
+          int cxa_status;
+          std::clog<<__FILE__<<":"<<__LINE__<<":"<<abi::__cxa_demangle(typeid(v).name(), 0, 0, &cxa_status)<<std::endl;
+          #endif
           using boost::gil::detail::png_read_is_supported;
           using boost::gil::detail::dynamic_io_fnobj;
           dynamic_io_fnobj <png_read_is_supported, png_writer> op(this);
           boost::gil::apply_operation(v,op);
         }
 
-        // template <typename Image>
-        // void write_image(/*const*/ Image & im)
-        // {
-        //   this->write_view(boost::gil::view(im));
-        // }
+        template <class Pixel, bool IsPlanar, class Alloc>
+        void write_image(const boost::gil::image<Pixel, IsPlanar, Alloc>& m)
+        {
+          this->write_view(boost::gil::view(m));
+        }
 
         template <typename Images>
         void write_image(const boost::gil::any_image<Images>& im)
         {
+          #if 0
+          int cxa_status;
+          std::clog<<__FILE__<<":"<<__LINE__<<":"<<abi::__cxa_demangle(typeid(im).name(), 0, 0, &cxa_status)<<std::endl;
+          #endif
           typename boost::gil::any_image<Images>::const_view_t v = boost::gil::const_view(im);
-          this->write_any_view(v);
+          this->write_view(v);
         }
 
       private:

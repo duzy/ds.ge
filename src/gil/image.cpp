@@ -10,7 +10,6 @@
 #include <ds/debug.hpp>
 #include <ds/graphics/gil/image.hpp>
 #include <ds/graphics/gil/png_io.hpp>
-#       include <boost/gil/extension/dynamic_image/any_image.hpp>
 
 namespace ds { namespace graphics { namespace gil {
 
@@ -79,7 +78,7 @@ namespace ds { namespace graphics { namespace gil {
       {
         try {
           gil::png_reader r( is );
-          r.read_any_view( this->any() );
+          r.read_view( this->any() );
           return true;
         }
         catch( std::exception const & e ) {
@@ -107,7 +106,7 @@ namespace ds { namespace graphics { namespace gil {
       {
         try {
           gil::png_writer w( os );
-          w.write_any_view( this->any() );
+          w.write_view( this->any() );
           return true;
         }
         catch( std::exception const & e ) {

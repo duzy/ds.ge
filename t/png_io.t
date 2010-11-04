@@ -127,7 +127,8 @@ void test_png_writer()
     BOOST_CHECK( os );
 
     ds::graphics::gil::png_writer w( os );
-    w.write_image( image );
+    //w.write_image( image );
+    w.write_image( image.any() );
   }
   {
     std::ifstream i( "test-out.png", i.binary | i.in );
