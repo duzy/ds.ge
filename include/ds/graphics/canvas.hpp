@@ -16,8 +16,9 @@
 
 namespace ds { namespace graphics {
 
-    struct image;
     struct color;
+    struct image;
+    struct glyph;
 
     struct point;
     struct segment;
@@ -72,6 +73,8 @@ namespace ds { namespace graphics {
       void render( const color & );
       void render( const image &, coordinate_t x, coordinate_t y );
       void render( const image & m, const point & p ) { render(m, p.x(), p.y()); }
+      void render( const glyph &, coordinate_t x, coordinate_t y );
+      void render( const glyph & g, const point & p ) { render(g, p.x(), p.y()); }
 
       void render( const point &,       const brush & = default_brush() );
       void render( const box &,         const brush & = default_brush() );
@@ -90,6 +93,8 @@ namespace ds { namespace graphics {
       void stroke( const ds::ustring &, coordinate_t x = 0, coordinate_t y = 0, const pen & = default_pen() );
       void stroke( const std::string &, coordinate_t x = 0, coordinate_t y = 0, const pen & = default_pen() );
       void stroke( const std::wstring &, coordinate_t x = 0, coordinate_t y = 0, const pen & = default_pen() );
+      void stroke( const glyph &, coordinate_t x, coordinate_t y );
+      void stroke( const glyph & g, const point & p ) { stroke(g, p.x(), p.y()); }
 
       static brush & default_brush();
       static pen &   default_pen();
