@@ -1,16 +1,12 @@
-#
+#	Copyright Duzy Chan <code@duzy.info>
 #
 
 $(call sm-new-module, dsge, shared)
 
 ds.ge.dir := $(sm.this.dir)
-ds.ge.dir.lib := $(ds.ge.dir)/out/$V/lib
-ds.ge.dir.bin := $(ds.ge.dir)/out/$V/bin
-ds.ge.qt_based := false
-ds.ui.dir := $(ds.ge.dir)/../ui
-#ds.ui.dir.lib := $(ds.ui.dir)/out/$V/lib
 
 include $(ds.ge.dir)/check-deps.mk
+include $(ds.ge.dir)/setup.mk
 
 sm.this.verbose = true
 sm.this.toolset = gcc
@@ -40,7 +36,6 @@ sm.this.includes := \
 sm.this.sources := \
   $(wildcard src/*.cpp) \
   $(wildcard src/gil/*.cpp) \
-  $(wildcard src/skia/*.cpp) \
 
 sm.this.libdirs := \
   -L$(ds.third.dir.lib) \
@@ -59,7 +54,13 @@ sm.this.libs += \
 
 sm.this.depends :=
 
-ifeq ($(ds.ge.qt_based),true)
+ifeq ($(ds.ge.base),ds)
+  sm.this.sources += $(wildcard src/ds/*.cpp)
+else
+ifeq ($(ds.ge.base),skia)
+  sm.this.sources += $(wildcard src/skia/*.cpp)
+else
+ifeq ($(ds.ge.base),qt)
   QT := $(if $(sm.os.name.linux),/usr/local/Trolltech/Qt-4.7.1,c:/Qt/4.7.0)
   $(call sm-check-target-exists,$(QT))
 
@@ -70,6 +71,8 @@ ifeq ($(ds.ge.qt_based),true)
   sm.this.includes += $(QT)/include
   sm.this.link.options += -Wl,--rpath,$(if $(sm.os.name.win32),$(QT)/bin,$(QT)/lib)
 endif#qt-based
+endif#skia-based
+endif#ds-based
 
 ifeq ($(sm.os.name),linux)
   sm.this.libs += pthread

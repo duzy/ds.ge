@@ -8,7 +8,7 @@
  **/
 
 #define __DS_GRAPHICS_LINE__hpp____by_Duzy_Chan__ 1
-#       include "point.hpp"
+#       include "../point.hpp"
 #       include <boost/geometry/geometries/concepts/point_concept.hpp>
 
 namespace ds { namespace graphics {
