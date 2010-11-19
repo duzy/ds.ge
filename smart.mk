@@ -104,7 +104,3 @@ endif#linux
 $(call sm-build-this)
 $(call sm-load-subdirs)
 
-###########################################
-
-test: out/$V/bin/all-units.test ; @echo "Running test set $<..."&& $<
-test-goal: goal-dsge test
