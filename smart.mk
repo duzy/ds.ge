@@ -76,9 +76,10 @@ endif#ds-based
 
 ifeq ($(sm.os.name),linux)
   sm.this.libs += pthread
-  sm.this.depends += $(sm.out.lib)/libdsge.so
-  $(sm.out.lib)/libdsge.so : $(sm.out.lib) $(sm.var.dsge.targets)
-	$(call sm.tool.common.ln,$(sm.top)/$(sm.var.dsge.targets),$@)
+  sm.this.targets += $(sm.out.lib)/libdsge.so
+  #$(sm.out.lib)/libdsge.so : $(sm.out.lib) $(sm.var.dsge.targets)
+  $(sm.out.lib)/libdsge.so : $(sm.out.lib) $(sm.out.bin)/dsge.so
+	$(call sm.tool.common.ln,$(sm.top)/$(sm.out.bin)/dsge.so,$@)
 else
 ifeq ($(sm.os.name),win32)
   sm.this.compile.options += -mwindows
@@ -88,6 +89,7 @@ ifeq ($(sm.os.name),win32)
     -Wl,--enable-auto-import
   sm.this.depends += $(sm.out.lib)/libdsge.a
   $(sm.out.lib)/libdsge.a : $(sm.out.lib) $(sm.this.targets)
+  #sm.this.depends += $(sm.out.lib)/libdsge.a
 
   sm.this.depends += \
     $(ds.ge.dir.bin)/$(ds.third.libpng.libname).so \
