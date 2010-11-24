@@ -63,9 +63,9 @@ ifeq ($(ds.ge.base),skia)
     $(ds.third.dir.inc)/skia/config \
     $(NULL)
   sm.this.libs += \
+    $(ds.third.skia.libname) \
     $(ds.third.freetype.libname) \
     $(ds.third.libpng.libname) \
-    $(ds.third.skia.libname) \
     $(ds.third.zlib.libname) \
     $(NULL)
 else
