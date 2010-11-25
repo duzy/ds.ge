@@ -10,8 +10,8 @@ ds.ge.dir := $(sm.this.dir)
 include $(ds.ge.dir)/check-deps.mk
 include $(ds.ge.dir)/setup.mk
 
-sm.this.verbose = true
-sm.this.toolset = gcc
+sm.this.verbose := true
+sm.this.toolset := $(toolset)
 
 sm.this.compile.options.infile := true
 sm.this.compile.options := \

@@ -5,4 +5,7 @@ $(call sm-check-target-exists, ../../ds.mk)
 
 include ../../ds.mk
 
+toolset ?= gcc
+
 sm.global.compile.options += $(ds.compile.options)
+

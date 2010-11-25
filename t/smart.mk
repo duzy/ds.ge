@@ -5,7 +5,7 @@ $(call sm-check-not-empty, ds.ge.dir)
 $(call sm-check-not-empty, ds.ge.dir.lib)
 
 sm.this.verbose := true
-sm.this.toolset := gcc
+sm.this.toolset := $(toolset)
 sm.this.lang := c++
 
 sm.this.includes := \
