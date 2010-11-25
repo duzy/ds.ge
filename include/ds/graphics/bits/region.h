@@ -53,7 +53,7 @@ namespace ds { namespace graphics {
 
     private:
       class rasterizer;
-      template<uint32_t> class operation;
+      class operation;
 
       box _bounds;
       std::vector<box> _boxes;

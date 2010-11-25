@@ -40,11 +40,12 @@ namespace ds { namespace graphics {
     };
 
     // from android:frameworks/base/include/private/ui/RegionHelper.h
-    template<typename RECT, uint32_t OP>
+    template<typename RECT>
     class region_operator
     {
     public:
-      struct region {
+      struct region
+      {
         RECT const* rects;
         size_t count;
         VALUE dx;
@@ -57,13 +58,15 @@ namespace ds { namespace graphics {
           : rects(r), count(c), dx(dx), dy(dy) { }
       };
 
-      inline region_operator(const region& lhs, const region& rhs)
+      inline region_operator(const region& lhs, const region& rhs, uint32_t op)
         : spanner(lhs, rhs)
+        , OP(op)
       {
       }
 
       template<typename RegionRasterizer>
-      void operator()(RegionRasterizer& rasterizer) {
+      void operator()(RegionRasterizer& rasterizer)
+      {
         RECT current = boost::geometry::make<RECT>( 0, 0, 0, 0 );
 
         do {
@@ -272,6 +275,7 @@ namespace ds { namespace graphics {
       };//class SpannerInner
 
       Spanner spanner;
+      uint32_t OP;
     };//class region_operator
 
     // This is our region rasterizer, which merges rects and spans together
@@ -368,7 +372,6 @@ namespace ds { namespace graphics {
       }
     };//class region::rasterizer
 
-    template<uint32_t OP>
     class region::operation
     {
       static box const * const get_array( const region & r, size_t * c )
@@ -385,7 +388,8 @@ namespace ds { namespace graphics {
     public:
       static void boolean(region& dst,
                           const region& lhs,
-                          const region& rhs, int dx, int dy)
+                          const region& rhs, int dx, int dy,
+                          uint32_t OP)
       {
         size_t lhs_count;
         box const * const lhs_rects = get_array(lhs, &lhs_count);
@@ -393,9 +397,9 @@ namespace ds { namespace graphics {
         size_t rhs_count;
         box const * const rhs_rects = get_array(rhs, &rhs_count);
 
-        typename region_operator<box, OP>::region lhs_region(lhs_rects, lhs_count);
-        typename region_operator<box, OP>::region rhs_region(rhs_rects, rhs_count, dx, dy);
-        region_operator<box, OP> oper(lhs_region, rhs_region);
+        typename region_operator<box>::region lhs_region(lhs_rects, lhs_count);
+        typename region_operator<box>::region rhs_region(rhs_rects, rhs_count, dx, dy);
+        region_operator<box> oper(lhs_region, rhs_region, OP);
         { // scope for rasterizer (dtor has side effects)
           rasterizer r(dst);
           oper(r);
@@ -404,14 +408,15 @@ namespace ds { namespace graphics {
 
       static void boolean(region& dst,
                           const region& lhs,
-                          const box& rhs, int dx, int dy)
+                          const box& rhs, int dx, int dy,
+                          uint32_t OP)
       {
         size_t lhs_count;
         box const * const lhs_rects = get_array(lhs, &lhs_count);
 
-        typename region_operator<box, OP>::region lhs_region(lhs_rects, lhs_count);
-        typename region_operator<box, OP>::region rhs_region(&rhs, 1, dx, dy);
-        region_operator<box, OP> oper(lhs_region, rhs_region);
+        typename region_operator<box>::region lhs_region(lhs_rects, lhs_count);
+        typename region_operator<box>::region rhs_region(&rhs, 1, dx, dy);
+        region_operator<box> oper(lhs_region, rhs_region, OP);
         { // scope for rasterizer (dtor has side effects)
           rasterizer r(dst);
           oper(r);
@@ -442,84 +447,84 @@ namespace ds { namespace graphics {
     region & region::operator |= ( const box & rhs )
     {
       region lhs(*this);
-      operation<op_or>::boolean( *this, lhs, rhs, 0, 0 );
+      operation::boolean( *this, lhs, rhs, 0, 0, op_or );
       return *this;
     }
 
     region & region::operator &= ( const box & rhs )
     {
       region lhs(*this);
-      operation<op_and>::boolean( *this, lhs, rhs, 0, 0 );
+      operation::boolean( *this, lhs, rhs, 0, 0, op_and );
       return *this;
     }
 
     region & region::operator -= ( const box & rhs )
     {
       region lhs(*this);
-      operation<op_nand>::boolean( *this, lhs, rhs, 0, 0 );
+      operation::boolean( *this, lhs, rhs, 0, 0, op_nand );
       return *this;
     }
 
     const region region::operator | ( const box & rhs ) const
     {
       region res;
-      operation<op_or>::boolean( res, *this, rhs, 0, 0 );
+      operation::boolean( res, *this, rhs, 0, 0, op_or );
       return res;
     }
 
     const region region::operator & ( const box & rhs ) const
     {
       region res;
-      operation<op_and>::boolean( res, *this, rhs, 0, 0 );
+      operation::boolean( res, *this, rhs, 0, 0, op_and );
       return res;
     }
 
     const region region::operator - ( const box & rhs ) const
     {
       region res;
-      operation<op_nand>::boolean( res, *this, rhs, 0, 0 );
+      operation::boolean( res, *this, rhs, 0, 0, op_nand );
       return res;
     }
 
     region & region::operator |= ( const region & rhs )
     {
       region lhs(*this);
-      operation<op_or>::boolean( *this, lhs, rhs, 0, 0 );
+      operation::boolean( *this, lhs, rhs, 0, 0, op_or );
       return *this;
     }
 
     region & region::operator &= ( const region & rhs )
     {
       region lhs(*this);
-      operation<op_and>::boolean( *this, lhs, rhs, 0, 0 );
+      operation::boolean( *this, lhs, rhs, 0, 0, op_and );
       return *this;
     }
 
     region & region::operator -= ( const region & rhs )
     {
       region lhs(*this);
-      operation<op_nand>::boolean( *this, lhs, rhs, 0, 0 );
+      operation::boolean( *this, lhs, rhs, 0, 0, op_nand );
       return *this;
     }
 
     const region region::operator | ( const region & rhs ) const
     {
       region res;
-      operation<op_or>::boolean( res, *this, rhs, 0, 0 );
+      operation::boolean( res, *this, rhs, 0, 0, op_or );
       return res;
     }
 
     const region region::operator & ( const region & rhs ) const
     {
       region res;
-      operation<op_and>::boolean( res, *this, rhs, 0, 0 );
+      operation::boolean( res, *this, rhs, 0, 0, op_and );
       return res;
     }
 
     const region region::operator - ( const region & rhs ) const
     {
       region res;
-      operation<op_nand>::boolean( res, *this, rhs, 0, 0 );
+      operation::boolean( res, *this, rhs, 0, 0, op_nand );
       return res;
     }
 
