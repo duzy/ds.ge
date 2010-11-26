@@ -69,6 +69,18 @@ ifeq ($(ds.ge.base),skia)
     $(ds.third.zlib.libname) \
     $(NULL)
 else
+ifeq ($(ds.ge.base),agg)
+  sm.this.sources += $(wildcard src/agg/*.cpp)
+  sm.this.includes += \
+    $(ds.third.dir.inc)/agg \
+    $(NULL)
+  sm.this.libs += \
+    $(ds.third.agg.libname) \
+    $(ds.third.freetype.libname) \
+    $(ds.third.libpng.libname) \
+    $(ds.third.zlib.libname) \
+    $(NULL)
+else
 ifeq ($(ds.ge.base),cairo)
   sm.this.sources += $(wildcard src/cairo/*.cpp)
 else
@@ -84,6 +96,7 @@ ifeq ($(ds.ge.base),qt)
   sm.this.link.options += -Wl,--rpath,$(if $(sm.os.name.win32),$(QT)/bin,$(QT)/lib)
 endif#qt-based
 endif#cairo-based
+endif#agg-based
 endif#skia-based
 endif#ds-based
 
