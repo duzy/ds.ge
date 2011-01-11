@@ -397,8 +397,8 @@ namespace ds { namespace graphics {
         size_t rhs_count;
         box const * const rhs_rects = get_array(rhs, &rhs_count);
 
-        typename region_operator<box>::region lhs_region(lhs_rects, lhs_count);
-        typename region_operator<box>::region rhs_region(rhs_rects, rhs_count, dx, dy);
+        /*typename*/ region_operator<box>::region lhs_region(lhs_rects, lhs_count);
+        /*typename*/ region_operator<box>::region rhs_region(rhs_rects, rhs_count, dx, dy);
         region_operator<box> oper(lhs_region, rhs_region, OP);
         { // scope for rasterizer (dtor has side effects)
           rasterizer r(dst);
@@ -414,8 +414,8 @@ namespace ds { namespace graphics {
         size_t lhs_count;
         box const * const lhs_rects = get_array(lhs, &lhs_count);
 
-        typename region_operator<box>::region lhs_region(lhs_rects, lhs_count);
-        typename region_operator<box>::region rhs_region(&rhs, 1, dx, dy);
+        /*typename*/ region_operator<box>::region lhs_region(lhs_rects, lhs_count);
+        /*typename*/ region_operator<box>::region rhs_region(&rhs, 1, dx, dy);
         region_operator<box> oper(lhs_region, rhs_region, OP);
         { // scope for rasterizer (dtor has side effects)
           rasterizer r(dst);
