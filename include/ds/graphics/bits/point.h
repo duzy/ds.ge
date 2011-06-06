@@ -14,16 +14,16 @@ namespace ds { namespace graphics {
 
     typedef float coordinate_t;
     typedef boost::geometry::cs::cartesian coordinate_system;
-    typedef boost::geometry::point_xy<coordinate_t, coordinate_system> base_point;
+    typedef boost::geometry::model::d2::point_xy<coordinate_t, coordinate_system> point_base;
 
-    struct point : base_point
+    struct point : point_base
     {
       point()
-        : base_point(0, 0)
+        : point_base(0, 0)
       {}
 
       point(coordinate_t x, coordinate_t y)
-        : base_point(x, y)
+        : point_base(x, y)
       {}
 
       bool operator == ( const point & rhs ) const
@@ -39,23 +39,22 @@ namespace boost { namespace geometry { namespace traits {
 
       template<>
       struct tag<ds::graphics::point>
-        : tag<ds::graphics::base_point> {};
+        : tag<ds::graphics::point_base> {};
 
       template<>
       struct coordinate_type<ds::graphics::point>
-        : coordinate_type<ds::graphics::base_point> {};
+        : coordinate_type<ds::graphics::point_base> {};
 
       template<>
       struct coordinate_system<ds::graphics::point>
-        : coordinate_system<ds::graphics::base_point> {};
+        : coordinate_system<ds::graphics::point_base> {};
 
       template<>
       struct dimension<ds::graphics::point>
-        : dimension<ds::graphics::base_point> {};
+        : dimension<ds::graphics::point_base> {};
 
       template<std::size_t Dimension>
       struct access<ds::graphics::point, Dimension>
-        : access<ds::graphics::base_point, Dimension> {};
+        : access<ds::graphics::point_base, Dimension> {};
 
     }}} // namespace boost::geometry::traits
-

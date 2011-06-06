@@ -13,7 +13,9 @@
 
 namespace ds { namespace graphics {
 
-    struct polygon : boost::geometry::polygon<point>
+    typedef boost::geometry::model::polygon<point> polygon_base;
+
+    struct polygon : polygon_base
     {
     };
     
@@ -24,23 +26,31 @@ namespace boost { namespace geometry { namespace traits {
 
       template<>
       struct tag<ds::graphics::polygon>
-        : tag< polygon<ds::graphics::point> > {};
+        : tag<ds::graphics::polygon_base> {};
 
       template<>
-      struct ring_type<ds::graphics::polygon>
-        : ring_type< polygon<ds::graphics::point> > {};
+      struct ring_const_type<ds::graphics::polygon>
+        : ring_const_type<ds::graphics::polygon_base> {};
 
       template<>
-      struct interior_type<ds::graphics::polygon>
-        : interior_type< polygon<ds::graphics::point> > {};
+      struct ring_mutable_type<ds::graphics::polygon>
+        : ring_mutable_type<ds::graphics::polygon_base> {};
+
+      template<>
+      struct interior_const_type<ds::graphics::polygon>
+        : interior_const_type<ds::graphics::polygon_base> {};
+
+      template<>
+      struct interior_mutable_type<ds::graphics::polygon>
+        : interior_mutable_type<ds::graphics::polygon_base> {};
 
       template<>
       struct exterior_ring<ds::graphics::polygon>
-        : exterior_ring< polygon<ds::graphics::point> > {};
+        : exterior_ring<ds::graphics::polygon_base> {};
 
       template<>
       struct interior_rings<ds::graphics::polygon>
-        : interior_rings< polygon<ds::graphics::point> > {};
+        : interior_rings<ds::graphics::polygon_base> {};
 
     }}} // namespace boost::geometry::traits
 

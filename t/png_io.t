@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( png_reader_test )
 template<typename image_t, std::size_t PixelSize>
 void test_png_writer()
 {
-  /*
+#if 0
   int status;
   std::clog
     <<"test_png_writer<"
@@ -114,7 +114,7 @@ void test_png_writer()
     <<">"
     <<std::endl
     ;
-  */
+#endif
 
   ds::graphics::gil::image image(image_t(5,5));
   BOOST_CHECK( image.width () == 5 );

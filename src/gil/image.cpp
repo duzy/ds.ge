@@ -7,9 +7,9 @@
  *
  **/
 
-#include <ds/debug.hpp>
 #include <ds/graphics/gil/image.hpp>
 #include <ds/graphics/gil/png_io.hpp>
+#include <ds/log.hpp>
 
 namespace ds { namespace graphics { namespace gil {
 

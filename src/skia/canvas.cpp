@@ -23,7 +23,7 @@
 #include <skia/core/SkPath.h>
 #include <skia/core/SkTypeface.h>
 #include <skia/core/SkFontHost.h>
-#include <ds/debug.hpp>
+#include <ds/log.hpp>
 
 namespace ds { namespace graphics {
     namespace
@@ -118,10 +118,12 @@ namespace ds { namespace graphics {
       {
         static const SkPaint::TextEncoding value = SkPaint::kUTF16_TextEncoding;
       };
+      /*
       template<> struct ChooseTextEncoding<ds::ustring::value_type>
       {
         static const SkPaint::TextEncoding value = SkPaint::kUTF16_TextEncoding;
       };
+      */
     }//namespace
 
     //--------------------------------------------------------------------
@@ -368,10 +370,12 @@ namespace ds { namespace graphics {
       _imp->draw( s, x, y, b );
     }
 
+    /*
     void canvas::render( const ds::ustring & s, coordinate_t x, coordinate_t y, const brush & b )
     {
       _imp->draw( s, x, y, b );
     }
+    */
 
     void canvas::stroke( const point & g, const pen & p )
     {
@@ -413,10 +417,12 @@ namespace ds { namespace graphics {
       _imp->draw( s, x, y, p );
     }
 
+    /*
     void canvas::stroke( const ds::ustring & s, coordinate_t x, coordinate_t y, const pen & p )
     {
       _imp->draw( s, x, y, p );
     }
+    */
 
   }//namespace graphics
 }//namespace ds

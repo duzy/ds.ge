@@ -7,7 +7,7 @@
 
 #include <ds/graphics/image.hpp>
 #include <ds/graphics/gil/image.hpp>
-#include <ds/debug.hpp>
+#include <ds/log.hpp>
 #ifdef PRINT_DEMANGLE
 #  include <typeinfo>
 #  include <cxxabi.h>

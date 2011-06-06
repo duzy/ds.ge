@@ -8,12 +8,12 @@
  **/
 
 #define __DS_GRAPHICS_RING__hpp____by_Duzy_Chan__ 1
-#       include <boost/geometry/geometries/linear_ring.hpp>
+#       include <boost/geometry/geometries/ring.hpp>
 #       include "../point.hpp"
 
 namespace ds { namespace graphics {
 
-    struct ring : boost::geometry::linear_ring<point>
+    struct ring : boost::geometry::model::ring<point>
     {
     };
     
@@ -24,18 +24,17 @@ namespace boost { namespace geometry { namespace traits {
 
       template<>
       struct tag<ds::graphics::ring>
-        : tag< linear_ring<ds::graphics::point> >
+        : tag< model::ring<ds::graphics::point> >
       {};
 
       template<>
       struct point_order<ds::graphics::ring>
-        : point_order< linear_ring<ds::graphics::point> >
+        : point_order< model::ring<ds::graphics::point> >
       {};
 
       template<>
       struct closure<ds::graphics::ring>
-        : closure< linear_ring<ds::graphics::point> >
+        : closure< model::ring<ds::graphics::point> >
       {};
 
     }}} // namespace boost::geometry::traits
-

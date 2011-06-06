@@ -47,7 +47,7 @@ namespace ds { namespace graphics {
       };
     }//namespace traits
     
-    struct box : boost::geometry::box<point>
+    struct box : boost::geometry::model::box<point>
     {
       enum 
         {
@@ -61,15 +61,12 @@ namespace ds { namespace graphics {
           index_y = index_top
         };
 
-    private:
-
-    public:
       box()
-        : boost::geometry::box<point>()
+        : boost::geometry::model::box<point>()
       {}
 
       box(const point & min, const point & max)
-        : boost::geometry::box<point>(min, max)
+        : boost::geometry::model::box<point>(min, max)
       {}
 
       template<std::size_t K>
@@ -165,18 +162,18 @@ namespace boost { namespace geometry { namespace traits {
 
       template<>
       struct tag<ds::graphics::box>
-        : tag<box<ds::graphics::point> > {};
+        : tag<model::box<ds::graphics::point> > {};
 
       template<>
       struct point_type<ds::graphics::box>
-        : point_type<box<ds::graphics::point> > {};
+        : point_type<model::box<ds::graphics::point> > {};
 
       template<std::size_t Dimension>
       struct indexed_access<ds::graphics::box, min_corner, Dimension>
-        : indexed_access<box<ds::graphics::point>, min_corner, Dimension> {};
+        : indexed_access<model::box<ds::graphics::point>, min_corner, Dimension> {};
 
       template<std::size_t Dimension>
       struct indexed_access<ds::graphics::box, max_corner, Dimension>
-        : indexed_access<box<ds::graphics::point>, max_corner, Dimension> {};
+        : indexed_access<model::box<ds::graphics::point>, max_corner, Dimension> {};
 
     }}} // namespace boost::geometry::traits

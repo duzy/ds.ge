@@ -12,7 +12,7 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/gil/extension/dynamic_image/algorithm.hpp>
-#include <ds/debug.hpp>
+#include <ds/log.hpp>
 #include <fstream>
 
 namespace ds { namespace graphics {

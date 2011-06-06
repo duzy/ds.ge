@@ -1,11 +1,6 @@
 # -*- mode: makefile -*-
 #
 
-$(call sm-check-target-exists, ../../ds.mk)
-
-include ../../ds.mk
-
-toolset ?= gcc
-
+#include ../../ds.mk
+include ../config.mk
 sm.global.compile.options += $(ds.compile.options)
-

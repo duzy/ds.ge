@@ -12,7 +12,7 @@
 #   include <boost/noncopyable.hpp>
 #   include "visibility.hpp"
 #   include "point.hpp"
-#   include <ds/ustring.hpp>
+//#   include <ds/ustring.hpp>
 
 namespace ds { namespace graphics {
 
@@ -80,7 +80,7 @@ namespace ds { namespace graphics {
       void render( const box &,         const brush & = default_brush() );
       void render( const ring &,        const brush & = default_brush() );
       void render( const polygon &,     const brush & = default_brush() );
-      void render( const ds::ustring &, coordinate_t x = 0, coordinate_t y = 0, const brush & = default_brush() );
+      //void render( const ds::ustring &, coordinate_t x = 0, coordinate_t y = 0, const brush & = default_brush() );
       void render( const std::string &, coordinate_t x = 0, coordinate_t y = 0, const brush & = default_brush() );
       void render( const std::wstring &, coordinate_t x = 0, coordinate_t y = 0, const brush & = default_brush() );
 
@@ -90,7 +90,7 @@ namespace ds { namespace graphics {
       void stroke( const box &,         const pen & = default_pen() );
       void stroke( const ring &,        const pen & = default_pen() );
       void stroke( const polygon &,     const pen & = default_pen() );
-      void stroke( const ds::ustring &, coordinate_t x = 0, coordinate_t y = 0, const pen & = default_pen() );
+      //void stroke( const ds::ustring &, coordinate_t x = 0, coordinate_t y = 0, const pen & = default_pen() );
       void stroke( const std::string &, coordinate_t x = 0, coordinate_t y = 0, const pen & = default_pen() );
       void stroke( const std::wstring &, coordinate_t x = 0, coordinate_t y = 0, const pen & = default_pen() );
       void stroke( const glyph &, coordinate_t x, coordinate_t y );

@@ -13,10 +13,10 @@
 
 namespace ds { namespace graphics {
 
-    struct segment : boost::geometry::segment<point>
+    struct segment : boost::geometry::model::segment<point>
     {
       explicit segment(point & a, point & b)
-        : boost::geometry::segment<point>(a, b)
+        : boost::geometry::model::segment<point>(a, b)
       {}
     };//struct segment
 
@@ -27,22 +27,22 @@ namespace boost { namespace geometry { namespace traits {
 
       template<>
       struct tag<ds::graphics::segment>
-        : tag<segment<ds::graphics::point> >
+        : tag<model::segment<ds::graphics::point> >
       {};
 
       template<>
       struct point_type<ds::graphics::segment>
-        : point_type<segment<ds::graphics::point> >
+        : point_type<model::segment<ds::graphics::point> >
       {};
 
       template<std::size_t Dimension>
       struct indexed_access<ds::graphics::segment, 0, Dimension>
-        : indexed_access<segment<ds::graphics::point>, 0, Dimension>
+        : indexed_access<model::segment<ds::graphics::point>, 0, Dimension>
       {};
 
       template<std::size_t Dimension>
       struct indexed_access<ds::graphics::segment, 1, Dimension>
-        : indexed_access<segment<ds::graphics::point>, 1, Dimension>
+        : indexed_access<model::segment<ds::graphics::point>, 1, Dimension>
       {};
 
     }}} // namespace boost::geometry::traits

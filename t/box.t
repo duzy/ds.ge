@@ -2,6 +2,7 @@
  *
  */
 
+#define BOOST_TEST_MODULE graphics
 #include <boost/test/unit_test.hpp>
 #include <ds/graphics/region.hpp>
 #include <boost/geometry/algorithms/make.hpp>

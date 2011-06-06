@@ -1,6 +1,6 @@
 #ifndef __DS_GRAPHICS_GIL_PNG_READER__HPP____by_Duzy_Chan__
 #define __DS_GRAPHICS_GIL_PNG_READER__HPP____by_Duzy_Chan__ 1
-#	include <ds/debug.hpp>
+#	include <ds/log.hpp>
 #	include <cstdio> //!< for fopen, fclose in gil/extension/io on MinGW
 extern "C" {
 #	include <png.h>

@@ -102,7 +102,7 @@ namespace ds { namespace graphics { namespace gil {
         /**/  any_image_t & any()       { return *this; }
 
         //const any_image_t::view_t any_view() const { return boost::gil::view(this->any()); }
-        /**/  any_image_t::view_t any_view()       { return boost::gil::view(this->any()); }
+        /* */ any_image_t::view_t any_view()       { return boost::gil::view(this->any()); }
 
         bool read_jpeg( std::istream & is );
         bool read_png ( std::istream & is );
@@ -134,12 +134,12 @@ namespace ds { namespace graphics { namespace gil {
 
         //any_image_t::const_view_t & any() const { return this->const_view(); }
         const any_image_t::view_t & any() const { return *this; }
-        /**/  any_image_t::view_t & any()       { return *this; }
+        /* */ any_image_t::view_t & any()       { return *this; }
 
-        bool read_jpeg( std::istream & is );
-        bool read_png ( std::istream & is );
-        bool read_gif ( std::istream & is );
-        bool read_tiff( std::istream & is );
+        bool read_jpeg ( std::istream & is );
+        bool read_png  ( std::istream & is );
+        bool read_gif  ( std::istream & is );
+        bool read_tiff ( std::istream & is );
 
         bool write_jpeg( std::ostream & os );
         bool write_png ( std::ostream & os );

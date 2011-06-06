@@ -18,7 +18,7 @@
 #include <ds/graphics/color.hpp>
 #include <ds/graphics/drawing_tools.hpp>
 #include <agg/agg_basics.h>
-#include <ds/debug.hpp>
+#include <ds/log.hpp>
 
 /**
  *  agg pipline:
@@ -128,9 +128,9 @@ namespace ds { namespace graphics {
     {
     }
 
-    void canvas::render( const ds::ustring & s, coordinate_t x, coordinate_t y, const brush & b )
-    {
-    }
+    // void canvas::render( const ds::ustring & s, coordinate_t x, coordinate_t y, const brush & b )
+    // {
+    // }
 
     void canvas::stroke( const point & g, const pen & p )
     {
@@ -164,9 +164,9 @@ namespace ds { namespace graphics {
     {
     }
 
-    void canvas::stroke( const ds::ustring & s, coordinate_t x, coordinate_t y, const pen & p )
-    {
-    }
+    // void canvas::stroke( const ds::ustring & s, coordinate_t x, coordinate_t y, const pen & p )
+    // {
+    // }
 
   }//namespace graphics
 }//namespace ds

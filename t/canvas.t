@@ -125,6 +125,7 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
     c.render( str, 20, 360, b );
     c.stroke( str, 20, 390, p );
   }
+#if 0
   {
     ds::ustring str((ds::uchar*)L"foobar");
     b.color = color::rgba( 0.10, 0.10, 0.10, 0.8 );
@@ -132,5 +133,6 @@ BOOST_AUTO_TEST_CASE( canvas_drawing )
     c.render( str, 20, 420, b );
     c.stroke( str, 20, 450, p );
   }
+#endif
   m.save( "test-canvas.png" );
 }
